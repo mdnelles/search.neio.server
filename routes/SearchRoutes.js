@@ -23,7 +23,7 @@ search.post('/add_entry', rf.verifyToken, (req, res) => {
    var intro = decodeURIComponent(req.body.intro);
    var code = decodeURIComponent(req.body.code);
    var image = decodeURIComponent(req.body.fileName);
-   var fileSize = decodeURIComponent(req.body.fileSize);
+   //var fileSize = decodeURIComponent(req.body.fileSize);
    let codeData = {
       ttype,
       title,
