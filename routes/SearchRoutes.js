@@ -4,11 +4,14 @@ const express = require('express'),
    Search = require('../models/Search'),
    SearchTypes = require('../models/SearchTypes'),
    Sequelize = require('sequelize'),
-   db = require('../database/db');
-rf = require('./RoutFuctions');
+   db = require('../database/db'),
+   fileUpload = require('express-fileupload'),
+   fs = require('fs-extra'),
+   rf = require('./RoutFuctions');
 //const CircularJSON = require('flatted');
 
 search.use(cors());
+search.use(fileUpload({ safeFileNames: true, preserveExtension: true }));
 
 search.post('/add_entry', rf.verifyToken, (req, res) => {
    // this is to populate the drop down for categorizing codebase search entries
@@ -203,6 +206,51 @@ search.post('/do_query', rf.verifyToken, (req, res) => {
          console.log('err:' + err);
          res.json({ error: err });
       });
+});
+
+search.post('/removeFile', rf.verifyToken, (req, res) => {
+   console.log('in removeFile');
+   const path = '../client/public/upload/';
+   const fileName = req.body.fileName;
+
+   // With Promises:
+   fs.remove('./tmp/myfile');
+   fs.remove(path + fileName)
+      .then(() => {
+         console.log('success delete file: ' + fileName);
+         res.send('ok').end();
+      })
+      .catch((err) => {
+         console.error('Failed in deleting file ' + fileName + ' Err: ' + err);
+         res.send('failed to delete file').end();
+      });
+});
+
+search.post('/uploadfile', rf.verifyToken, function(req, res) {
+   var mime = req.files.files.mimetype.toString();
+
+   //if(fn.includes(".php") || fn.includes(".js") ||  fn.includes(".pl") || fn.includes(".htm")|| fn.includes(".exe") || fn.includes(".txt") || !fn.includes(".")){
+   if (
+      mime.includes('image') ||
+      mime.includes('audio') ||
+      mime.includes('video')
+   ) {
+      req.files.files.mv(
+         '../client/public/upload/' + req.files.files.name,
+         function(err) {
+            if (err) {
+               console.log('Error: ' + err);
+               res.send('Upload failed' + err).end();
+            } else {
+               console.log('Uploaded ok');
+               res.end('File uploaded successfully');
+            }
+         }
+      );
+   } else {
+      console.log('Illegal file type');
+      res.send('Illegal file type').end();
+   }
 });
 
 module.exports = search;
