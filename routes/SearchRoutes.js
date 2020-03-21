@@ -17,11 +17,13 @@ search.post('/add_entry', rf.verifyToken, (req, res) => {
    // this is to populate the drop down for categorizing codebase search entries
    var date1 = get_date();
    var date2 = Math.round(new Date().getTime() / 1000);
-   ttype = decodeURIComponent(req.body.ttype);
-   title = decodeURIComponent(req.body.title);
-   keywords = decodeURIComponent(req.body.keywords);
-   intro = decodeURIComponent(req.body.intro);
-   code = decodeURIComponent(req.body.code);
+   var ttype = decodeURIComponent(req.body.ttype);
+   var title = decodeURIComponent(req.body.title);
+   var keywords = decodeURIComponent(req.body.keywords);
+   var intro = decodeURIComponent(req.body.intro);
+   var code = decodeURIComponent(req.body.code);
+   var image = decodeURIComponent(req.body.fileName);
+   var fileSize = decodeURIComponent(req.body.fileSize);
    let codeData = {
       ttype,
       title,
@@ -29,7 +31,8 @@ search.post('/add_entry', rf.verifyToken, (req, res) => {
       intro,
       code,
       date1,
-      date2
+      date2,
+      image
    };
 
    Search.create(codeData)
