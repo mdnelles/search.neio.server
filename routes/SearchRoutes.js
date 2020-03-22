@@ -230,8 +230,12 @@ search.post('/removeFile', rf.verifyToken, (req, res) => {
 });
 
 search.post('/uploadfile', rf.verifyToken, function(req, res) {
-   console.log('in upload file');
    var mime = req.files.files.mimetype.toString();
+   let pathToUpload = __dirname
+      .toString()
+      .replace('/server/routes', '/client/build/upload/')
+      .replace('//', '/');
+   console.log('In upload file path = ' + pathToUpload);
 
    //if(fn.includes(".php") || fn.includes(".js") ||  fn.includes(".pl") || fn.includes(".htm")|| fn.includes(".exe") || fn.includes(".txt") || !fn.includes(".")){
    if (
@@ -239,19 +243,15 @@ search.post('/uploadfile', rf.verifyToken, function(req, res) {
       mime.includes('audio') ||
       mime.includes('video')
    ) {
-      req.files.files.mv(
-         '/var/www/sites/search.nelles.io/client/build/upload/' +
-            req.files.files.name,
-         function(err) {
-            if (err) {
-               console.log('Error: ' + err);
-               res.send('SearchRoutes.uploadfileUpload failed' + err).end();
-            } else {
-               console.log('Uploaded ok');
-               res.end('File uploaded successfully');
-            }
+      req.files.files.mv(pathToUpload + req.files.files.name, function(err) {
+         if (err) {
+            console.log('Error: ' + err);
+            res.send('SearchRoutes.uploadfileUpload failed' + err).end();
+         } else {
+            console.log('Uploaded ok');
+            res.end('File uploaded successfully');
          }
-      );
+      });
    } else {
       console.log('Illegal file type');
       res.send('Illegal file type').end();
@@ -270,7 +270,7 @@ const get_date = () => {
       month +
       '-' +
       d.getFullYear() +
-      '~~' +
+      ' - ' +
       d.getHours() +
       ':' +
       d.getMinutes() +
