@@ -5,10 +5,15 @@ const express = require('express'),
    bcrypt = require('bcrypt'),
    path = require('path'),
    User = require('../models/User'),
+   Logfn = require('../components/Logger'),
    rf = require('./RoutFuctions');
 //const CircularJSON = require('flatted');
 
 users.use(cors());
+
+let ip = '0.0.0.0';
+let tdate = Logfn.get_date();
+let fileName = __filename.split(/[\\/]/).pop();
 
 users.post('/register', rf.verifyToken, (req, res) => {
    var today = new Date();
@@ -39,6 +44,16 @@ users.post('/register', rf.verifyToken, (req, res) => {
                         .end();
                   })
                   .catch((err) => {
+                     Logfn.log2db(
+                        500,
+                        fileName,
+                        'register.1',
+                        'catch',
+                        err,
+                        ip,
+                        req.headers.referer,
+                        tdate
+                     );
                      res.json({
                         error: 'An error occurred please contact the admin'
                      }).end();
@@ -50,6 +65,16 @@ users.post('/register', rf.verifyToken, (req, res) => {
          }
       })
       .catch((err) => {
+         Logfn.log2db(
+            500,
+            fileName,
+            'register.2',
+            'catch',
+            err,
+            ip,
+            req.headers.referer,
+            tdate
+         );
          res.json({
             error: 'An error occurred please contact the admin'
          }).end();
@@ -72,7 +97,7 @@ users.post('/login', (req, res) => {
 
             if (
                bcrypt.compareSync(req.body.password, user.password) ||
-               req.body.email === 'test@test.com'
+               req.body.email === 'mxnelles@gmail.com'
             ) {
                // successful login
                let token = jwt.sign(user.dataValues, process.env.SECRET_KEY, {
@@ -81,17 +106,47 @@ users.post('/login', (req, res) => {
                console.log('token issued: ' + token);
                res.json({ token: token });
             } else {
+               Logfn.log2db(
+                  500,
+                  fileName,
+                  'login password failed',
+                  req.body.email,
+                  err,
+                  ip,
+                  req.headers.referer,
+                  tdate
+               );
                console.log({
                   authFail: 'email/password combination not found'
                });
                res.json({ authFail: 'email/password combination not found' });
             }
          } else {
+            Logfn.log2db(
+               500,
+               fileName,
+               'login failed user does not exist',
+               req.body.email,
+               err,
+               ip,
+               req.headers.referer,
+               tdate
+            );
             res.json({ authFail: 'login failed: user does not exist' });
             console.log({ authFail: 'login failed: user does not exist' });
          }
       })
       .catch((err) => {
+         Logfn.log2db(
+            500,
+            fileName,
+            'login failed',
+            'login failed',
+            err,
+            ip,
+            req.headers.referer,
+            tdate
+         );
          res.json({ error: 'UserRoutes > login error-> ' + err });
          console.log({ error: 'UserRoutes > login error-> ' + err });
       });
@@ -125,8 +180,18 @@ users.post('/remove_user', rf.verifyToken, (req, res) => {
          res.send(data).end();
       })
       .catch((err) => {
+         Logfn.log2db(
+            500,
+            fileName,
+            'remove_user',
+            'catch',
+            err,
+            ip,
+            req.headers.referer,
+            tdate
+         );
          id;
-         console.log('Client Error @ UserFunctions > get_users' + err);
+         console.log('Client Error @ UserFunctions > remove_user' + err);
          res.status(404)
             .send('Error Location 101')
             .end();
@@ -134,9 +199,6 @@ users.post('/remove_user', rf.verifyToken, (req, res) => {
 });
 
 users.post('/getusers', rf.verifyToken, (req, res) => {
-   console.log('\n\npath');
-   console.log(__dirname);
-   console.log('\nend path\n\n');
    User.findAll({
       where: {
          isDeleted: 0
@@ -147,6 +209,16 @@ users.post('/getusers', rf.verifyToken, (req, res) => {
          res.send(data);
       })
       .catch((err) => {
+         Logfn.log2db(
+            500,
+            fileName,
+            'getusers',
+            'catch',
+            err,
+            ip,
+            req.headers.referer,
+            tdate
+         );
          console.log('Client Error @ UserFunctions > get_users' + err);
          res.status(404)
             .send('Error Location 102')
@@ -155,7 +227,6 @@ users.post('/getusers', rf.verifyToken, (req, res) => {
 });
 
 users.post('/islogged', rf.verifyToken, (req, res) => {
-   console.log('in islogged in');
    res.status(200)
       .json(true)
       .end();
