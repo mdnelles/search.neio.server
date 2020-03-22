@@ -230,6 +230,7 @@ search.post('/removeFile', rf.verifyToken, (req, res) => {
 });
 
 search.post('/uploadfile', rf.verifyToken, function(req, res) {
+   console.log('in upload file');
    var mime = req.files.files.mimetype.toString();
 
    //if(fn.includes(".php") || fn.includes(".js") ||  fn.includes(".pl") || fn.includes(".htm")|| fn.includes(".exe") || fn.includes(".txt") || !fn.includes(".")){
@@ -239,11 +240,12 @@ search.post('/uploadfile', rf.verifyToken, function(req, res) {
       mime.includes('video')
    ) {
       req.files.files.mv(
-         '../client/public/upload/' + req.files.files.name,
+         '/var/www/sites/search.nelles.io/client/build/upload/' +
+            req.files.files.name,
          function(err) {
             if (err) {
                console.log('Error: ' + err);
-               res.send('Upload failed' + err).end();
+               res.send('SearchRoutes.uploadfileUpload failed' + err).end();
             } else {
                console.log('Uploaded ok');
                res.end('File uploaded successfully');
