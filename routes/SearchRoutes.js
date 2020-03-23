@@ -23,13 +23,13 @@ search.post('/add_entry', rf.verifyToken, (req, res) => {
    // this is to populate the drop down for categorizing codebase search entries
    var date1 = Logfn.get_date();
    var date2 = Math.round(new Date().getTime() / 1000);
-   var ttype = decodeURIComponent(req.body.ttype);
-   var title = decodeURIComponent(req.body.title);
-   var keywords = decodeURIComponent(req.body.keywords);
-   var intro = decodeURIComponent(req.body.intro);
-   var code = decodeURIComponent(req.body.code);
-   var image = decodeURIComponent(req.body.fileName);
-   //var fileSize = decodeURIComponent(req.body.fileSize);
+   var ttype = req.body.ttype;
+   var title = req.body.title;
+   var keywords = req.body.keywords;
+   var intro = req.body.intro;
+   var code = req.body.code;
+   var image = req.body.fileName;
+   //var fileSize = req.body.fileSize);
    let codeData = {
       ttype,
       title,
@@ -78,7 +78,7 @@ search.post('/add_entry', rf.verifyToken, (req, res) => {
 
 search.post('/add_cat', rf.verifyToken, (req, res) => {
    // this is to populate the drop down for categorizing codebase search entries
-   ttype = decodeURIComponent(req.body.category);
+   ttype = req.body.category;
 
    let codeData = {
       ttype
@@ -191,7 +191,7 @@ search.post('/get_titles', rf.verifyToken, (req, res) => {
 
 search.post('/del_entry', rf.verifyToken, (req, res) => {
    console.log('in del_entry id = ' + req.body.id);
-   Search.destroy({ where: { id: req.body.id } }, { limit: 1 })
+   Search.update({ isDeleted: 1 }, { where: { id: req.body.id } }, { limit: 1 })
       .then((data) => {
          res.send('200').end();
       })
@@ -270,7 +270,8 @@ search.post('/do_query', rf.verifyToken, (req, res) => {
       where: {
          title: {
             [Sequelize.Op.like]: '%' + query + '%'
-         }
+         },
+         isDeleted: 0
       }
    })
       .then((data) => {
