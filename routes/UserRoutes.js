@@ -11,7 +11,7 @@ const express = require('express'),
 
 users.use(cors());
 
-let ip = '0.0.0.0';
+let ip = '0.0.0.0'; // install ip tracker
 let tdate = Logfn.get_date();
 let fileName = __filename.split(/[\\/]/).pop();
 
