@@ -21,7 +21,7 @@ let fileName = __filename.split(/[\\/]/).pop();
 
 search.post('/add_entry', rf.verifyToken, (req, res) => {
    // this is to populate the drop down for categorizing codebase search entries
-   var date1 = get_date();
+   var date1 = Logfn.get_date();
    var date2 = Math.round(new Date().getTime() / 1000);
    var ttype = decodeURIComponent(req.body.ttype);
    var title = decodeURIComponent(req.body.title);

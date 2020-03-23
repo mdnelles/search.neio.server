@@ -7,9 +7,14 @@ exports.log2db = (
    msg_programmer,
    msg_app,
    ip,
-   refer
+   refer,
+   tdate
 ) => {
    console.log('inside log2db');
+   console.log(msg_app);
+   if (typeof msg_app && msg_app !== undefined)
+      msg_app = JSON.stringify(msg_app);
+
    const logData = {
       code,
       filename,
@@ -17,7 +22,8 @@ exports.log2db = (
       msg_programmer,
       msg_app,
       ip,
-      refer
+      refer,
+      tdate
    };
    Log.create(logData);
    //console.log('Data logged to DB: ' + logData);

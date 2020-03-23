@@ -38,10 +38,12 @@ app.use(
 
 var User = require('./routes/UserRoutes'),
    Dba = require('./routes/DbaRoutes'),
+   Logs = require('./routes/LogRoutes'),
    Search = require('./routes/SearchRoutes');
 
 app.use('/user', User);
 app.use('/dba', Dba);
+app.use('/logs', Logs);
 app.use('/search', Search);
 
 // serve static assets if in production
