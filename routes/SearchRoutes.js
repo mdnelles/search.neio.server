@@ -271,63 +271,19 @@ search.post('/do_query', rf.verifyToken, (req, res) => {
          title: {
             [Sequelize.Op.like]: '%' + query + '%'
          },
-         isDeleted: 0
-      }
+         isDeleted: 0,
+         code: {
+            [Sequelize.Op.like]: '%' + query + '%'
+         }
+      },
+      order: [['id', 'DESC']]
    })
       .then((data) => {
          console.log('got data from first query');
          if (data) {
-            data.forEach((e) => {
-               e.search1 = true;
-            });
             //console.log(data);
             // now do second query for looser fitting results
-            db.sequelize
-               .query(
-                  'SELECT * FROM searches WHERE !(title LIKE :search) AND code LIKE :search ORDER BY date2 DESC ',
-                  {
-                     replacements: { search: `%${query}%` },
-                     type: Sequelize.QueryTypes.SELECT
-                  }
-               )
-               .then((data2) => {
-                  // if second query returned result
-                  if (data2) {
-                     let allData = data.concat(data2);
-                     res.send(allData); // send back the data
-                  } else {
-                     if (data) {
-                        res.send(allData);
-                     } else {
-                        Logfn.log2db(
-                           500,
-                           fileName,
-                           'do_query',
-                           'no data',
-                           '',
-                           ip,
-                           req.headers.referer,
-                           tdate
-                        );
-                        res.json({ error: 'no data to send' });
-                     }
-                  }
-               })
-               .catch((err2) => {
-                  // error on query 2
-                  Logfn.log2db(
-                     500,
-                     fileName,
-                     'do_query',
-                     'catch',
-                     err2,
-                     ip,
-                     req.headers.referer,
-                     tdate
-                  );
-                  console.log('err(2):' + err2);
-                  res.json({ error: err2 });
-               });
+            res.send(data);
          } else {
             Logfn.log2db(
                500,

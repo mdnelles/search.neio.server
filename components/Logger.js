@@ -14,7 +14,7 @@ exports.log2db = (
    console.log(msg_app);
    if (typeof msg_app && msg_app !== undefined)
       msg_app = JSON.stringify(msg_app);
-
+   msg_app = msg_app.substring(0, 499);
    const logData = {
       code,
       filename,
