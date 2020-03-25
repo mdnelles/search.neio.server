@@ -4,6 +4,7 @@ const express = require('express'),
    Search = require('../models/Search'),
    SearchTypes = require('../models/SearchTypes'),
    Sequelize = require('sequelize'),
+   { Op } = require('sequelize'),
    db = require('../database/db'),
    fileUpload = require('express-fileupload'),
    fs = require('fs-extra'),
@@ -265,38 +266,50 @@ search.post('/upd_entry', rf.verifyToken, (req, res) => {
 search.post('/do_query', rf.verifyToken, (req, res) => {
    console.log('in doQuery');
    let query = decodeURI(req.body.query).toString();
-   //console.log(req);
-   Search.findAll({
-      where: {
-         title: {
-            [Sequelize.Op.like]: '%' + query + '%'
-         },
-         isDeleted: 0,
-         code: {
-            [Sequelize.Op.like]: '%' + query + '%'
+   db.sequelize
+      .query(
+         'SELECT * FROM searches WHERE ( title LIKE :query AND isDeleted = 0 )',
+         {
+            replacements: {
+               query: `%${query}%`
+            },
+            type: Sequelize.QueryTypes.SELECT
          }
-      },
-      order: [['id', 'DESC']]
-   })
-      .then((data) => {
-         console.log('got data from first query');
-         if (data) {
-            //console.log(data);
-            // now do second query for looser fitting results
-            res.send(data);
-         } else {
-            Logfn.log2db(
-               500,
-               fileName,
-               'do_query',
-               'catch',
-               err,
-               ip,
-               req.headers.referer,
-               tdate
-            );
-            res.json({ error: 'no data to send' });
-         }
+      )
+      .then((data1) => {
+         db.sequelize
+            .query(
+               'SELECT * FROM searches WHERE code LIKE :query AND isDeleted = 0 AND !(title LIKE :query) ',
+               {
+                  replacements: {
+                     query: `%${query}%`
+                  },
+                  type: Sequelize.QueryTypes.SELECT
+               }
+            )
+            .then((data2) => {
+               console.log('got data from first query');
+               //console.log(data1);
+               if (data1 !== undefined && data2 !== undefined) {
+                  res.send(data1.concat(data2));
+               } else if (data1 !== undefined) {
+                  res.send(data1);
+               } else if (data2 !== undefined) {
+                  res.send(data2);
+               } else {
+                  Logfn.log2db(
+                     500,
+                     fileName,
+                     'do_query',
+                     'catch',
+                     err,
+                     ip,
+                     req.headers.referer,
+                     tdate
+                  );
+                  res.json({ error: 'no data to send' });
+               }
+            });
       })
       .catch((err) => {
          Logfn.log2db(
