@@ -13,12 +13,15 @@ let tdate = Logfn.get_date();
 let fileName = __filename.split(/[\\/]/).pop();
 
 logs.post('/get_logs', rf.verifyToken, (req, res) => {
-   let code = 500;
-   let perPage = 20;
-   let offset = 0;
+   let code = 500,
+      perPage = 20,
+      offset = 0;
+   let p = req.body.page;
    if (req.body.code !== undefined) code = req.body.code;
    if (req.body.perPage !== undefined) perPage = req.body.perPage;
-   if (req.body.offset !== undefined) offset = req.body.offset;
+   console.log('perPage = ' + perPage);
+   console.log('p = ' + p);
+   if (p !== undefined && !isNaN(p)) offset = p * perPage - perPage;
 
    db.sequelize
       .query(
