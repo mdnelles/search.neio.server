@@ -14,18 +14,20 @@ let fileName = __filename.split(/[\\/]/).pop();
 
 logs.post('/get_logs', rf.verifyToken, (req, res) => {
    let code = 500;
-   if (req.body.code !== undefined) code = req.body.code;
-   console.log(req.body.perPage);
    let perPage = 20;
+   let offset = 0;
+   if (req.body.code !== undefined) code = req.body.code;
    if (req.body.perPage !== undefined) perPage = req.body.perPage;
+   if (req.body.offset !== undefined) offset = req.body.offset;
 
    db.sequelize
       .query(
-         'SELECT * FROM logs WHERE code LIKE :code ORDER BY id DESC limit :perPage',
+         'SELECT * FROM logs WHERE code LIKE :code ORDER BY id DESC limit :perPage OFFSET :offset',
          {
             replacements: {
                code: code,
-               perPage: perPage
+               perPage: perPage,
+               offset: offset
             },
             type: Sequelize.QueryTypes.SELECT
          }
@@ -63,8 +65,11 @@ logs.post('/get_logcount', rf.verifyToken, (req, res) => {
          type: Sequelize.QueryTypes.SELECT
       })
       .then((data) => {
-         console.log(data);
-         res.send(data);
+         data = JSON.stringify(data);
+         let temp1 = data.split(':');
+         let temp2 = temp1[1].split('}');
+         let num = temp2[0];
+         res.send(num);
       })
       .catch((err) => {
          Logfn.log2db(
