@@ -8,8 +8,7 @@ const express = require('express'),
    pj = require('./config/config.json'),
    path = require('path');
 
-process.env.SECRET_KEY = 'secret2020xyz';
-process.env.PF = '';
+
 
 app.use(bodyParser.json());
 app.use(cookieParser());
