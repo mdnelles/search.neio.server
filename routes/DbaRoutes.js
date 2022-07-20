@@ -9,15 +9,15 @@ dbadmin.use(cors());
 
 dbadmin.post("/restorfromnew2", rf.verifyToken, (req, res) => {
    let DBname = req.body.DBname;
-   let dump = `mysqldump -u ${process.env.NODE_JS_DB_USER} -p${process.env.NODE_JS_DB_PASS} ${DBname} > ./tmp/${DBname}.sql`;
-   let copy = `mysql -u ${process.env.NODE_JS_DB_USER} -p${process.env.NODE_JS_DB_PASS} ${process.env.NODE_JS_DB_NAME} < ./tmp/${DBname}.sql`;
+   let dump = `mysqldump -u ${process.env.NODE_DB_USER} -p${process.env.NODE_DB_PASS} ${DBname} > ./tmp/${DBname}.sql`;
+   let copy = `mysql -u ${process.env.NODE_DB_USER} -p${process.env.NODE_DB_PASS} ${process.env.NODE_DB_NAME} < ./tmp/${DBname}.sql`;
    //dump = 'pwd'
    sh.exec(dump, (code, output) => {
       sh.exec(copy, (code, output) => {
          res.json({
             success:
                "restored (MainDB:" +
-               process.env.NODE_JS_DB_NAME +
+               process.env.NODE_DB_NAME +
                ") from " +
                DBname,
          }).end();
@@ -26,13 +26,11 @@ dbadmin.post("/restorfromnew2", rf.verifyToken, (req, res) => {
 });
 
 dbadmin.post("/restormain", rf.verifyToken, (req, res) => {
-   let copy = `mysql -u ${process.env.NODE_JS_DB_USER} -p${process.env.NODE_JS_DB_PASS} ${process.env.NODE_JS_DB_NAME} < ./tmp/${process.env.NODE_JS_DB_NAME}_copy.sql`;
+   let copy = `mysql -u ${process.env.NODE_DB_USER} -p${process.env.NODE_DB_PASS} ${process.env.NODE_DB_NAME} < ./tmp/${process.env.NODE_DB_NAME}_copy.sql`;
    sh.exec(copy, (code, output) => {
       res.json({
          success:
-            "restored (MainDB:" +
-            process.env.NODE_JS_DB_NAME +
-            ") from sql file",
+            "restored (MainDB:" + process.env.NODE_DB_NAME + ") from sql file",
       }).end();
    });
 });
@@ -40,15 +38,15 @@ dbadmin.post("/restormain", rf.verifyToken, (req, res) => {
 dbadmin.post("/copyfromdb2", rf.verifyToken, (req, res) => {
    let DBname = req.body.DBname;
    // following command works at command line but not in program
-   var dump = `mysqldump --column-statistics=0 -h ${process.env.NODE_JS_DB_HOST} -u ${process.env.NODE_JS_DB_USER} -p${process.env.NODE_JS_DB_PASS} ${process.env.NODE_JS_DB_NAME} --set-gtid-purged=OFF | mysql -h ${process.env.NODE_JS_DB_HOST} -u ${process.env.NODE_JS_DB_USER} -p${process.env.NODE_JS_DB_PASS}  ${DBname}  `;
+   var dump = `mysqldump --column-statistics=0 -h ${process.env.NODE_DB_HOST} -u ${process.env.NODE_DB_USER} -p${process.env.NODE_DB_PASS} ${process.env.NODE_DB_NAME} --set-gtid-purged=OFF | mysql -h ${process.env.NODE_DB_HOST} -u ${process.env.NODE_DB_USER} -p${process.env.NODE_DB_PASS}  ${DBname}  `;
 
    if (shell.exec(dump).code !== 0) {
       console.log(
-         `ERR: ${process.env.NODE_JS_DB_NAME} *FAILED* copied to-> ${DBname} `
+         `ERR: ${process.env.NODE_DB_NAME} *FAILED* copied to-> ${DBname} `
       );
       res.send("fail");
    } else {
-      console.log(`${process.env.NODE_JS_DB_NAME} copied to-> ${DBname}`);
+      console.log(`${process.env.NODE_DB_NAME} copied to-> ${DBname}`);
       res.send("success");
    }
 });
@@ -77,7 +75,7 @@ dbadmin.post("/createdb2", rf.verifyToken, (req, res) => {
       db.sequelize
          .query(
             `CREATE DATABASE IF NOT EXISTS ${
-               process.env.NODE_JS_DB_NAME + req.body.newDbName
+               process.env.NODE_DB_NAME + req.body.newDbName
             } `,
             {
                type: db.sequelize.QueryTypes.CREATE,
@@ -101,11 +99,11 @@ dbadmin.post("/showdbs2", rf.verifyToken, (req, res) => {
             //console.log('LOC routes / DbaRoutes / showdbs rows = ' +JSON.stringify(rows));
             var temp = JSON.stringify(rows);
             var arrOfDbNames = temp.toString().split('"');
-            var showDbs = [process.env.NODE_JS_DB_NAME];
+            var showDbs = [process.env.NODE_DB_NAME];
             arrOfDbNames.forEach((e, i) => {
                if (
                   e !== undefined &&
-                  e.toString().includes(process.env.NODE_JS_DB_NAME)
+                  e.toString().includes(process.env.NODE_DB_NAME)
                ) {
                   //check to see if it is already pushed because getting dupes
                   var alreadyPushed = false;

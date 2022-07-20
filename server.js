@@ -3,18 +3,18 @@ require("dotenv").config();
 var express = require("express"),
    cors = require("cors"),
    app = express(),
+   bodyParser = require("body-parser"),
    port = process.env.PORT || 5010,
    session = require("express-session"),
    path = require("path");
 
-app.use(cors());
-app.use(express.json());
+/*
 app.use(
    session({
-      secret: process.env.NODE_JS_SECRET,
+      secret: process.env.NODE_SECRET,
       proxy: true,
       httpOnly: false,
-      resave: process.env.NODE_JS_COOKIE_RESAVE,
+      resave: process.env.NODE_COOKIE_RESAVE,
       saveUninitialized: process.env.NODE_COOKIE_SAVE_UNINITIALZED,
       cookie: {
          secure: false,
@@ -22,18 +22,16 @@ app.use(
          path: "/",
       },
    })
-);
-app.use(
-   express.urlencoded({
-      extended: true,
-   })
-);
-app.use(express.json());
-app.use(
-   express.urlencoded({
-      extended: true,
-   })
-);
+);*/
+app.use(cors());
+// create application/json parser
+var jsonParser = bodyParser.json();
+
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+app.use(jsonParser);
+app.use(urlencodedParser);
 
 var User = require("./routes/UserRoutes"),
    Dba = require("./routes/DbaRoutes"),
