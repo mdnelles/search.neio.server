@@ -1,18 +1,21 @@
-const express = require("express"),
+require("dotenv").config();
+
+var express = require("express"),
    cors = require("cors"),
-   bodyParser = require("body-parser"),
-   cookieParser = require("cookie-parser"),
-   session = require("express-session"),
    app = express(),
-   port = process.env.PORT || 5006,
+   port = process.env.PORT || 5010,
+   session = require("express-session"),
    path = require("path");
 
-app.use(bodyParser.json());
-app.use(cookieParser());
 app.use(cors());
-
+app.use(express.json());
 app.use(
    session({
+      secret: process.env.NODE_JS_SECRET,
+      proxy: true,
+      httpOnly: false,
+      resave: process.env.NODE_JS_COOKIE_RESAVE,
+      saveUninitialized: process.env.NODE_COOKIE_SAVE_UNINITIALZED,
       cookie: {
          secure: false,
          httpOnly: false,
@@ -20,10 +23,15 @@ app.use(
       },
    })
 );
-
 app.use(
-   bodyParser.urlencoded({
-      extended: false,
+   express.urlencoded({
+      extended: true,
+   })
+);
+app.use(express.json());
+app.use(
+   express.urlencoded({
+      extended: true,
    })
 );
 
