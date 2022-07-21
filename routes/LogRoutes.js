@@ -5,7 +5,6 @@ const express = require("express"),
    Logfn = require("../components/Logger"),
    rf = require("./RoutFuctions");
 
-let ip = "0.0.0.0";
 let tdate = Logfn.get_date();
 let fileName = __filename.split(/[\\/]/).pop();
 
@@ -36,7 +35,7 @@ logs.post("/get_logs", rf.verifyToken, (req, res) => {
             "get_logs",
             "catch",
             err,
-            ip,
+            req,
             req.headers.referer,
             tdate
          );
@@ -46,8 +45,7 @@ logs.post("/get_logs", rf.verifyToken, (req, res) => {
 });
 
 logs.post("/get_logcount", rf.verifyToken, (req, res) => {
-   let code = 500;
-   if (req.body.code !== undefined) code = req.body.code;
+   const { code = 500 } = params;
 
    db.sequelize
       .query("SELECT count(*) FROM logs WHERE code = :code ", {
@@ -70,7 +68,7 @@ logs.post("/get_logcount", rf.verifyToken, (req, res) => {
             "get_count (logs)",
             "catch",
             err,
-            ip,
+            req,
             req.headers.referer,
             tdate
          );

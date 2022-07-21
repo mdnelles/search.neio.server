@@ -6,11 +6,7 @@ const express = require("express"),
    User = require("../models/User"),
    Logfn = require("../components/Logger"),
    rf = require("./RoutFuctions");
-//const CircularJSON = require('flatted');
 
-users.use(cors());
-
-let ip = "0.0.0.0"; // install ip tracker
 let tdate = Logfn.get_date();
 let fileName = __filename.split(/[\\/]/).pop();
 const { NODE_ADMIN_EMAIL, NODE_ADMIN_PASSWORD, NODE_DB_HOST } = process.env;
@@ -50,7 +46,7 @@ users.post("/register", (req, res) => {
                         "register.1",
                         "catch",
                         err,
-                        ip,
+                        req,
                         req.headers.referer,
                         tdate
                      );
@@ -71,7 +67,7 @@ users.post("/register", (req, res) => {
             "register.2",
             "catch",
             err,
-            ip,
+            req,
             req.headers.referer,
             tdate
          );
@@ -103,7 +99,7 @@ users.all("/login", (req, res) => {
          "login password failed",
          req.body.email,
          "error",
-         ip,
+         req,
          req.headers.referer,
          tdate
       );
@@ -148,7 +144,7 @@ users.post("/remove_user", rf.verifyToken, (req, res) => {
             "remove_user",
             "catch",
             err,
-            ip,
+            req,
             req.headers.referer,
             tdate
          );
@@ -175,7 +171,7 @@ users.post("/getusers", rf.verifyToken, (req, res) => {
             "getusers",
             "catch",
             err,
-            ip,
+            req,
             req.headers.referer,
             tdate
          );
