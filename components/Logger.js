@@ -1,4 +1,4 @@
-const Log = require('../models/Logs');
+const Log = require("../models/Logs");
 
 exports.log2db = (
    code,
@@ -6,11 +6,16 @@ exports.log2db = (
    fnction,
    msg_programmer,
    msg_app,
-   ip,
+   req,
    refer,
    tdate
 ) => {
-   console.log('inside log2db');
+   const ip =
+      !!req && (!!req.headers || req.socket)
+         ? req.headers["x-forwarded-for"] ||
+           req.socket.remoteAddress ||
+           "0.0.0.0"
+         : "0.0.0.0";
    console.log(msg_app);
    if (typeof msg_app && msg_app !== undefined)
       msg_app = JSON.stringify(msg_app);
@@ -23,10 +28,9 @@ exports.log2db = (
       msg_app,
       ip,
       refer,
-      tdate
+      tdate,
    };
    Log.create(logData);
-   //console.log('Data logged to DB: ' + logData);
 };
 
 exports.get_date = () => {
@@ -35,15 +39,15 @@ exports.get_date = () => {
    month += 1;
    let tdate =
       d.getDate() +
-      '-' +
+      "-" +
       month +
-      '-' +
+      "-" +
       d.getFullYear() +
-      ' - ' +
+      " - " +
       d.getHours() +
-      ':' +
+      ":" +
       d.getMinutes() +
-      ' ' +
+      " " +
       d.getSeconds();
    return tdate;
 };

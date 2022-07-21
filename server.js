@@ -8,7 +8,6 @@ var express = require("express"),
    session = require("express-session"),
    path = require("path");
 
-/*
 app.use(
    session({
       secret: process.env.NODE_SECRET,
@@ -22,7 +21,7 @@ app.use(
          path: "/",
       },
    })
-);*/
+);
 app.use(cors());
 // create application/json parser
 var jsonParser = bodyParser.json();
