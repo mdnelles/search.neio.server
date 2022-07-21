@@ -35,12 +35,14 @@ app.use(urlencodedParser);
 var User = require("./routes/UserRoutes"),
    Dba = require("./routes/DbaRoutes"),
    Logs = require("./routes/LogRoutes"),
+   Todo = require("./routes/Todo"),
    Search = require("./routes/SearchRoutes");
 
 app.use("/user", User);
 app.use("/dba", Dba);
 app.use("/logs", Logs);
 app.use("/search", Search);
+app.use("/todo", Todo);
 
 // serve static assets if in production
 if (process.env.NODE_ENV === "production") {
