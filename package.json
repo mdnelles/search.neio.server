@@ -29,6 +29,7 @@
       "concurrently": "*",
       "cookie-parser": "^1.4.6",
       "cors": "*",
+      "dotenv": "^16.0.1",
       "express": "*",
       "express-fileupload": "^1.4.0",
       "express-session": "^1.17.3",

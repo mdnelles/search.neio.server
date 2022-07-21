@@ -1,31 +1,37 @@
-const express = require("express"),
+require("dotenv").config();
+
+var express = require("express"),
    cors = require("cors"),
-   bodyParser = require("body-parser"),
-   cookieParser = require("cookie-parser"),
-   session = require("express-session"),
    app = express(),
-   port = process.env.PORT || 5006,
+   bodyParser = require("body-parser"),
+   port = process.env.PORT || 5010,
+   session = require("express-session"),
    path = require("path");
 
-app.use(bodyParser.json());
-app.use(cookieParser());
-app.use(cors());
-
+/*
 app.use(
    session({
+      secret: process.env.NODE_SECRET,
+      proxy: true,
+      httpOnly: false,
+      resave: process.env.NODE_COOKIE_RESAVE,
+      saveUninitialized: process.env.NODE_COOKIE_SAVE_UNINITIALZED,
       cookie: {
          secure: false,
          httpOnly: false,
          path: "/",
       },
    })
-);
+);*/
+app.use(cors());
+// create application/json parser
+var jsonParser = bodyParser.json();
 
-app.use(
-   bodyParser.urlencoded({
-      extended: false,
-   })
-);
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+app.use(jsonParser);
+app.use(urlencodedParser);
 
 var User = require("./routes/UserRoutes"),
    Dba = require("./routes/DbaRoutes"),

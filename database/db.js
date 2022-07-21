@@ -1,11 +1,11 @@
 const Sequelize = require("sequelize");
 const db = {};
 const sequelize = new Sequelize(
-   process.env.NODE_JS_DB_NAME,
-   process.env.NODE_JS_DB_USER,
-   process.env.NODE_JS_DB_PASS,
+   process.env.NODE_DB_NAME,
+   process.env.NODE_DB_USER,
+   process.env.NODE_DB_PASS,
    {
-      host: process.env.NODE_JS_DB_HOST,
+      host: process.env.NODE_DB_HOST,
       dialect: "mysql",
       logging: console.log,
       freezeTableName: true,
