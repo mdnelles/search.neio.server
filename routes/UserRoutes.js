@@ -87,7 +87,7 @@ users.all("/login", (req, res) => {
    ) {
       // successful login
       let token = jwt.sign(
-         { exp: Math.floor(Date.now() / 1000) + 60 * 60, data: email },
+         { exp: Math.floor(Date.now() / 1000) + 60 * 60 * 10000, data: email },
          process.env.NODE_SECRET
       );
       console.log("token issued: " + token);

@@ -114,8 +114,6 @@ search.post("/add_cat", rf.verifyToken, (req, res) => {
 });
 
 search.post("/get_ttypes", rf.verifyToken, (req, res) => {
-   let ref = req.headers.referer;
-   // this is to populate the drop down for categorizing codebase search entries
    SearchTypes.findAll({
       attributes: ["id", "ttype"],
       order: [["ttype", "ASC"]],
@@ -143,7 +141,6 @@ search.post("/get_ttypes", rf.verifyToken, (req, res) => {
 });
 
 search.post("/get_titles", rf.verifyToken, (req, res) => {
-   let ref = req.headers.referer;
    Search.findAll({
       attributes: ["id", "title"],
       where: {
