@@ -36,19 +36,18 @@ todo.post("/del_entry", rf.verifyToken, async (req, res) => {
    try {
       await Todo.destroy({ where: { id: req.body.id } }, { limit: 1 });
       res.json({ status: 200, err: false, msg: "ok" });
-   } catch (err) {
+   } catch (error) {
       Logfn.log2db(
          500,
          fileName,
          "del_entry",
          "no data to send",
-         err,
+         error,
          req,
          req.headers.referer,
          tdate
       );
-      console.log("err: todoRoutes.del_entry: " + err);
-      res.json({ error: err });
+      res.json({ status: 200, err: true, msg: "", error });
    }
 });
 
@@ -72,7 +71,7 @@ todo.post("/upd_entry", rf.verifyToken, async (req, res) => {
          fileName,
          "upd_entry",
          "catch",
-         err,
+         error,
          req,
          req.headers.referer,
          tdate
@@ -92,13 +91,13 @@ todo.post("/fetch", rf.verifyToken, async (req, res) => {
          fileName,
          "do_query",
          "catch.2",
-         err,
+         error,
          req,
          req.headers.referer,
          tdate
       );
       console.log("err:" + err);
-      res.json({ status: 200, err: true, msg: "" });
+      res.json({ status: 200, err: true, msg: "", error });
    }
 });
 

@@ -8,13 +8,13 @@ const express = require("express"),
 let tdate = Logfn.get_date();
 let fileName = __filename.split(/[\\/]/).pop();
 
-logs.post("/get_logs", rf.verifyToken, (req, res) => {
-   const { code = 500, perPage = 20, page } = req.body;
+logs.post("/get_logs", rf.verifyToken, async (req, res) => {
+   try {
+      const { code = 500, perPage = 20, page } = req.body;
 
-   const offset = !!page && !isNaN(page) ? page * perPage - perPage : 0;
+      const offset = !!page && !isNaN(page) ? page * perPage - perPage : 0;
 
-   db.sequelize
-      .query(
+      const data = db.sequelize.query(
          "SELECT * FROM logs WHERE code LIKE :code ORDER BY id DESC limit :perPage OFFSET :offset",
          {
             replacements: {
@@ -24,57 +24,53 @@ logs.post("/get_logs", rf.verifyToken, (req, res) => {
             },
             type: Sequelize.QueryTypes.SELECT,
          }
-      )
-      .then((data) => {
-         res.send(data);
-      })
-      .catch((err) => {
-         Logfn.log2db(
-            500,
-            fileName,
-            "get_logs",
-            "catch",
-            err,
-            req,
-            req.headers.referer,
-            tdate
-         );
-         console.log("Client Error @ UserFunctions > get_logs" + err);
-         res.status(404).send("Error Location 102").end();
-      });
+      );
+      res.json({ status: 200, err: false, msg: "ok", data });
+   } catch (error) {
+      Logfn.log2db(
+         500,
+         fileName,
+         "get_logs",
+         "catch",
+         error,
+         req,
+         req.headers.referer,
+         tdate
+      );
+      console.log("Client Error @ UserFunctions > get_logs" + error);
+      res.json({ status: 200, err: false, msg: "ok", data });
+   }
 });
 
 logs.post("/get_logcount", rf.verifyToken, (req, res) => {
-   const { code = 500 } = params;
+   try {
+      const { code = 500 } = params;
 
-   db.sequelize
-      .query("SELECT count(*) FROM logs WHERE code = :code ", {
-         replacements: {
-            code: code,
-         },
-         type: Sequelize.QueryTypes.SELECT,
-      })
-      .then((data) => {
-         data = JSON.stringify(data);
-         let temp1 = data.split(":");
-         let temp2 = temp1[1].split("}");
-         let num = temp2[0];
-         res.send(num);
-      })
-      .catch((err) => {
-         Logfn.log2db(
-            500,
-            fileName,
-            "get_count (logs)",
-            "catch",
-            err,
-            req,
-            req.headers.referer,
-            tdate
-         );
-         console.log("Server @ LogRoutes.get_count" + err);
-         res.status(200).send("Error LogRoutes.get_count").end();
-      });
+      const data = db.sequelize.query(
+         "SELECT count(*) FROM logs WHERE code = :code ",
+         {
+            replacements: {
+               code: code,
+            },
+            type: Sequelize.QueryTypes.SELECT,
+         }
+      );
+
+      res.json({ status: 200, err: false, msg: "ok", data });
+   } catch (error) {
+      Logfn.log2db(
+         500,
+         fileName,
+         "get_count (logs)",
+         "catch",
+         error,
+         req,
+         req.headers.referer,
+         tdate
+      );
+      console.log("Server @ LogRoutes.get_count" + err);
+      res.json({ status: 200, err: true, msg: "", error });
+   }
 });
 
 module.exports = logs;
