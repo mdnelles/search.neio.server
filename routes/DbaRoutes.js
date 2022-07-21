@@ -54,8 +54,8 @@ dbadmin.post("/copyfromdb2", rf.verifyToken, (req, res) => {
 dbadmin.post("/removedupes2", rf.verifyToken, (req, res) => {
    // establish that refering url is allowed
    var sql = `DELETE A
-                    FROM  envision.donors A,
-                          envision.donors B
+                    FROM  snowflake.donors A,
+                          snowflake.donors B
                     WHERE  A.donorName = B.donorName AND  A.id > B.id`;
    db.sequelize
       .query(sql)

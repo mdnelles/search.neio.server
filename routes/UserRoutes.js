@@ -186,7 +186,6 @@ users.post("/getusers", rf.verifyToken, (req, res) => {
 
 users.post("/islogged", rf.verifyToken, (req, res) => {
    res.status(200).json(true).end();
-   // if false rf.verifyToken will send response -> res.status(403)
 });
 
 module.exports = users;
