@@ -1,6 +1,5 @@
 const express = require("express"),
    users = express.Router(),
-   cors = require("cors"),
    jwt = require("jsonwebtoken"),
    bcrypt = require("bcrypt"),
    User = require("../models/User"),
