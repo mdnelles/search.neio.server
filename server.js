@@ -36,11 +36,13 @@ var User = require("./routes/UserRoutes"),
    Dba = require("./routes/DbaRoutes"),
    Logs = require("./routes/LogRoutes"),
    Todo = require("./routes/Todo"),
+   Note = require("./routes/Note"),
    Search = require("./routes/SearchRoutes");
 
 app.use("/user", User);
 app.use("/dba", Dba);
 app.use("/logs", Logs);
+app.use("/note", Note);
 app.use("/search", Search);
 app.use("/todo", Todo);
 
