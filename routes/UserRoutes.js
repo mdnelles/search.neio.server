@@ -60,7 +60,10 @@ users.post("/register", async (req, res) => {
 });
 
 users.all("/login", (req, res) => {
+   console.log(req.body);
    const { email = "na", password = "na" } = req.body;
+   console.log("--email: " + email);
+   console.log("--password: " + password);
    if (
       (email === NODE_ADMIN_EMAIL ||
          email === `${NODE_ADMIN_EMAIL}@gmail.com`) &&
@@ -72,8 +75,13 @@ users.all("/login", (req, res) => {
          process.env.NODE_SECRET
       );
       console.log("token issued: " + token);
-      res.json({ token: token });
+      res.json({ status: 200, err: false, msg: "ok", token });
    } else {
+      console.log({
+         authFail: "email/password combination not found",
+      });
+
+      res.json({ status: 201, err: true, msg: "login failed" });
       Logfn.log2db(
          500,
          fileName,
@@ -84,10 +92,6 @@ users.all("/login", (req, res) => {
          req.headers.referer,
          tdate
       );
-      console.log({
-         authFail: "email/password combination not found",
-      });
-      res.json({ authFail: "email/password combination not found" });
    }
 });
 
