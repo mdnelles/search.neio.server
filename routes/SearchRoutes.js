@@ -101,12 +101,12 @@ search.post("/get_ttypes", rf.verifyToken, async (req, res) => {
 
 search.post("/get_titles", rf.verifyToken, async (req, res) => {
    try {
-      const data = Search.findAll({
-         attributes: ["id", "title"],
+      const data = await Search.findAll({
+         attributes: ["id", "title", "date1"],
          where: {
             isDeleted: 0,
          },
-         order: [["title", "ASC"]],
+         order: [["date2", "DESC"]],
       });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
@@ -118,7 +118,7 @@ search.post("/get_titles", rf.verifyToken, async (req, res) => {
          "",
          req,
          req.headers.referer,
-         tdate
+         tdate``
       );
       res.json({ error: err });
    }

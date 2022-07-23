@@ -60,10 +60,8 @@ users.post("/register", async (req, res) => {
 });
 
 users.all("/login", (req, res) => {
-   console.log(req.body);
    const { email = "na", password = "na" } = req.body;
-   console.log("--email: " + email);
-   console.log("--password: " + password);
+
    if (
       (email === NODE_ADMIN_EMAIL ||
          email === `${NODE_ADMIN_EMAIL}@gmail.com`) &&

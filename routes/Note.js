@@ -35,7 +35,7 @@ note.post("/upd_entry", rf.verifyToken, async (req, res) => {
 note.post("/fetch", rf.verifyToken, async (req, res) => {
    try {
       const data = await db.sequelize.query("SELECT * FROM notes");
-      res.json({ status: 200, err: false, msg: "ok", data });
+      res.json({ status: 200, err: false, msg: "ok", data: data[0] });
    } catch (error) {
       Logfn.log2db(
          500,

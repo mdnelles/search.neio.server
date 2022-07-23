@@ -81,10 +81,10 @@ todo.post("/upd_entry", rf.verifyToken, async (req, res) => {
    }
 });
 
-todo.post("/fetch", rf.verifyToken, async (req, res) => {
+todo.post("/get_todo", rf.verifyToken, async (req, res) => {
    try {
       const data = await db.sequelize.query("SELECT * FROM todos ");
-      res.json({ status: 200, err: false, msg: "ok", data });
+      res.json({ status: 200, err: false, msg: "ok", data: data[0] });
    } catch (error) {
       Logfn.log2db(
          500,

@@ -25,43 +25,40 @@ let tdate = get_date();
 let fileName = __filename.split(/[\\/]/).pop();
 
 const tokenTest = (token, res, jwt, caller, next) => {
-   jwt.verify(token, process.env.NODE_SECRET, (err) => {
-      if (err) {
-         Logfn.log2db(
-            500,
-            fileName,
-            "Token Test",
-            "bad token",
-            err,
-            ip,
-            caller,
-            tdate
-         );
-         console.log(
-            " /// " +
-               caller +
-               " failed -> token not verified: " +
-               err +
-               "\n==token=>" +
-               token
-         );
-         // this will send forbidden 403 response
-         res.sendStatus(403);
-      } else {
-         Logfn.log2db(
-            200,
-            fileName,
-            "Token Test",
-            "Token accepted",
-            "",
-            ip,
-            caller,
-            tdate
-         );
-         console.log("token ok caller -> " + caller);
-         next(); // Next middleware
-      }
-   });
+   try {
+      jwt.verify(token, process.env.NODE_SECRET, (error) => {
+         if (error) {
+            console.log("bad token:" + token);
+            res.json({
+               err: true,
+               status: 201,
+               msg: "login again to obtain new token",
+               error,
+            });
+         } else {
+            Logfn.log2db(
+               200,
+               fileName,
+               "Token Test",
+               "Token accepted",
+               "",
+               ip,
+               caller,
+               tdate
+            );
+            console.log("token ok caller -> " + caller);
+            next(); // Next middleware
+         }
+      });
+   } catch (err) {
+      console.log("bad token:" + token);
+      res.json({
+         err: true,
+         status: 201,
+         msg: "login again to obtain new token",
+         error,
+      });
+   }
 };
 
 exports.verifyToken = function (req, res, next) {
