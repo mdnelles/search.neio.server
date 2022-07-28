@@ -1,4 +1,4 @@
-name: React Build CI push to server
+name: NodeJS Build CI push to server
 
 on:
    push:
