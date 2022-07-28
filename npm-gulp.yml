@@ -1,0 +1,30 @@
+name: React Build CI push to server
+
+on:
+   push:
+      branches: ["main"]
+
+jobs:
+   build:
+      runs-on: self-hosted
+
+      steps:
+         - uses: actions/checkout@v3
+
+         - name: Use Node.js ${{ matrix.node-version }}
+           uses: actions/setup-node@v3
+           with:
+              node-version: ${{ matrix.node-version }}
+
+         - name: Build
+           run: |
+              npm install
+              echo "  ------install complete"
+              CI=false npm run build
+              echo "  ------build complete"
+              cd build
+              echo " ------in build folder"
+              cp ./* -R ../../../../../../nodejs
+              echo " ------copy complete"
+              cp ../.env ./
+              npm run start

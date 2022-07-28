@@ -101,12 +101,12 @@ search.post("/get_ttypes", rf.verifyToken, async (req, res) => {
 
 search.post("/get_titles", rf.verifyToken, async (req, res) => {
    try {
-      const data = Search.findAll({
-         attributes: ["id", "title"],
+      const data = await Search.findAll({
+         attributes: ["id", "title", "date1", "code"],
          where: {
             isDeleted: 0,
          },
-         order: [["title", "ASC"]],
+         order: [["date2", "DESC"]],
       });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
@@ -118,7 +118,7 @@ search.post("/get_titles", rf.verifyToken, async (req, res) => {
          "",
          req,
          req.headers.referer,
-         tdate
+         tdate``
       );
       res.json({ error: err });
    }
@@ -163,20 +163,20 @@ search.post("/del_cat", rf.verifyToken, async (req, res) => {
          req.headers.referer,
          tdate
       );
-      console.log("err: SearchRoutes.del_cat: " + err);
-      res.json({ error: err });
+      console.log("err: SearchRoutes.del_cat: " + error);
+      res.json({ error });
    }
 });
 
 search.post("/upd_entry", rf.verifyToken, async (req, res) => {
+   const { title, code, id } = req.body;
    try {
       const data = await Search.update(
          {
-            title: req.body.title,
-            code: req.body.code,
-            intro: req.body.intro,
+            title,
+            code,
          },
-         { where: { id: req.body.id } },
+         { where: { id } },
          { limit: 1 }
       );
       res.json({ status: 200, err: false, msg: "ok", data });
