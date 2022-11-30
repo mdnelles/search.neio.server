@@ -26,6 +26,7 @@ jobs:
          #pm2 is set to --watch so it will restart express on change
          - name: Build
            run: |
+              echo "here"
               cp ./* -R ../../../../nodejs
               cd ../../../../nodejs
               npm ci
