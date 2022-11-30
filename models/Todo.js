@@ -1,28 +1,28 @@
-const Sequelize = require("sequelize");
-const db = require("../database/db.js");
+import { INTEGER, STRING, DATE } from "sequelize";
+import { sequelize } from "../database/db.js";
 
-module.exports = db.sequelize.define(
+export default sequelize.define(
    "todo",
    {
       id: {
-         type: Sequelize.INTEGER,
+         type: INTEGER,
          primaryKey: true,
          autoIncrement: true,
       },
       title: {
-         type: Sequelize.STRING,
+         type: STRING,
       },
       details: {
-         type: Sequelize.STRING,
+         type: STRING,
       },
       due: {
-         type: Sequelize.STRING,
+         type: STRING,
       },
       createAt: {
-         type: Sequelize.DATE,
+         type: DATE,
       },
       updatedAt: {
-         type: Sequelize.DATE,
+         type: DATE,
       },
    },
    {

@@ -1,27 +1,26 @@
-const Sequelize = require('sequelize')
-const db = require('../database/db.js')
+import { INTEGER, STRING, DATE, NOW } from "sequelize";
+import { sequelize } from "../database/db.js";
 
-module.exports = db.sequelize.define(
-  'session',
-  {
-    id: {
-      type: Sequelize.INTEGER,
-      primaryKey: true,
-      autoIncrement: true
-    },
-    user_id: {
-      type: Sequelize.STRING
-    },
-    session_key: {
-      type: Sequelize.STRING
-    },
-    created: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW
-    },
-  },
-  {
-    timestamps: false
-  }
-)
- 
+export default sequelize.define(
+   "session",
+   {
+      id: {
+         type: INTEGER,
+         primaryKey: true,
+         autoIncrement: true,
+      },
+      user_id: {
+         type: STRING,
+      },
+      session_key: {
+         type: STRING,
+      },
+      created: {
+         type: DATE,
+         defaultValue: NOW,
+      },
+   },
+   {
+      timestamps: false,
+   }
+);

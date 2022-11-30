@@ -1,20 +1,22 @@
-const express = require("express"),
-   logs = express.Router(),
-   db = require("../database/db"),
-   Sequelize = require("sequelize"),
-   Logfn = require("../components/Logger"),
-   rf = require("./RoutFuctions");
+import { Router } from "express";
+import { sequelize } from "../database/db";
+import { QueryTypes } from "sequelize";
+import { get_date, log2db } from "../components/Logger";
+import { verifyToken } from "./RoutFuctions";
+import { fileURLToPath } from "url";
 
-let tdate = Logfn.get_date();
+const __filename = fileURLToPath(import.meta.url);
+const logs = Router();
+let tdate = get_date();
 let fileName = __filename.split(/[\\/]/).pop();
 
-logs.post("/get_logs", rf.verifyToken, async (req, res) => {
+logs.post("/get_logs", verifyToken, async (req, res) => {
    try {
       const { code = 500, perPage = 20, page } = req.body;
 
       const offset = !!page && !isNaN(page) ? page * perPage - perPage : 0;
 
-      const data = db.sequelize.query(
+      const data = sequelize.query(
          "SELECT * FROM logs WHERE code LIKE :code ORDER BY id DESC limit :perPage OFFSET :offset",
          {
             replacements: {
@@ -22,12 +24,12 @@ logs.post("/get_logs", rf.verifyToken, async (req, res) => {
                perPage,
                offset,
             },
-            type: Sequelize.QueryTypes.SELECT,
+            type: QueryTypes.SELECT,
          }
       );
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
          fileName,
          "get_logs",
@@ -37,28 +39,28 @@ logs.post("/get_logs", rf.verifyToken, async (req, res) => {
          req.headers.referer,
          tdate
       );
-      console.log("Client Error @ UserFunctions > get_logs" + error);
-      res.json({ status: 200, err: false, msg: "ok", data });
+      console.log(error);
+      res.json({ status: 200, err: false, msg: "error" });
    }
 });
 
-logs.post("/get_logcount", rf.verifyToken, (req, res) => {
+logs.post("/get_logcount", verifyToken, (req, res) => {
    try {
-      const { code = 500 } = params;
+      const { code = 500 } = req.params;
 
-      const data = db.sequelize.query(
+      const data = sequelize.query(
          "SELECT count(*) FROM logs WHERE code = :code ",
          {
             replacements: {
                code: code,
             },
-            type: Sequelize.QueryTypes.SELECT,
+            type: QueryTypes.SELECT,
          }
       );
 
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
          fileName,
          "get_count (logs)",
@@ -68,9 +70,9 @@ logs.post("/get_logcount", rf.verifyToken, (req, res) => {
          req.headers.referer,
          tdate
       );
-      console.log("Server @ LogRoutes.get_count" + err);
+      console.log(error);
       res.json({ status: 200, err: true, msg: "", error });
    }
 });
 
-module.exports = logs;
+export default logs;

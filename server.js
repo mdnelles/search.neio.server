@@ -18,6 +18,7 @@ app.use(
    session({
       secret: env.NODE_SECRET,
       proxy: true,
+
       httpOnly: false,
       resave: env.NODE_COOKIE_RESAVE,
       saveUninitialized: env.NODE_COOKIE_SAVE_UNINITIALZED,

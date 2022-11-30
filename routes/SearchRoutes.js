@@ -8,8 +8,10 @@ import { remove } from "fs-extra";
 import { get_date, log2db } from "../components/Logger";
 import { verifyToken } from "./RoutFuctions";
 import { fileURLToPath } from "url";
+import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const search = Router();
 search.use(fileUpload({ safeFileNames: true, preserveExtension: true }));
@@ -121,7 +123,7 @@ search.post("/get_titles", verifyToken, async (req, res) => {
          req.headers.referer,
          tdate``
       );
-      res.json({ error: err });
+      res.json({ err: true, msg: "error", error, status: 201 });
    }
 });
 
@@ -144,14 +146,14 @@ search.post("/del_entry", verifyToken, async (req, res) => {
          req.headers.referer,
          tdate
       );
-      console.log("err: SearchRoutes.del_entry: " + err);
-      res.json({ error: err });
+      console.log(error);
+      res.json({ err: true, msg: "error", error, status: 201 });
    }
 });
 
 search.post("/del_cat", verifyToken, async (req, res) => {
    try {
-      await destroy({ where: { id: req.body.id } }, { limit: 1 });
+      const data = await destroy({ where: { id: req.body.id } }, { limit: 1 });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       log2db(
@@ -164,8 +166,8 @@ search.post("/del_cat", verifyToken, async (req, res) => {
          req.headers.referer,
          tdate
       );
-      console.log("err: SearchRoutes.del_cat: " + error);
-      res.json({ error });
+      console.log(error);
+      res.json({ err: true, msg: "error", error, status: 201 });
    }
 });
 
@@ -192,8 +194,8 @@ search.post("/upd_entry", verifyToken, async (req, res) => {
          req.headers.referer,
          tdate
       );
-      console.log("err:" + err);
-      res.json({ error: err });
+      console.log(error);
+      res.json({ err: true, msg: "error", error, status: 201 });
    }
 });
 
@@ -221,11 +223,11 @@ search.post("/do_query", verifyToken, async (req, res) => {
          }
       );
 
-      if (!!data1 && !!data2) {
+      if (data1 && data2) {
          data = data1.concat(data2);
-      } else if (!!data1) {
+      } else if (data1) {
          data = data1;
-      } else if (!!data2) {
+      } else if (data2) {
          data = data2;
       }
       res.json({ status: 200, err: false, msg: "ok", data });
