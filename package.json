@@ -3,7 +3,7 @@
    "version": "1.1.03",
    "description": "NodeJS TypeScript Server",
    "engines": {
-      "node": "^16.0.0",
+      "node": "^18.0.0",
       "npm": "^8.0.0"
    },
    "main": "server.js",
@@ -11,7 +11,10 @@
       "update:packages": "node wipe-dependencies.js && rm -rf node_modules && npm update --save-dev && npm update --save",
       "client-install": "npm install --prefix client",
       "start": "node server.js",
-      "server": "nodemon server.js --ignore client"
+      "server": "nodemon server.js --ignore client",
+      "lint:init": "./node_modules/.bin/eslint --init",
+      "lint": "eslint .  --ext .js",
+      "lint:fix": "eslint --fix .  --ext .js"
    },
    "adminStart": true,
    "keywords": [
@@ -44,9 +47,11 @@
       "sequelize": "^6.26.0",
       "serve": "^14.1.2",
       "shelljs": "^0.8.5",
+      "url": "^0.11.0",
       "uuid": "^9.0.0"
    },
    "devDependencies": {
+      "eslint": "^8.28.0",
       "nodemon": "^2.0.20"
    }
 }

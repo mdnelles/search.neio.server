@@ -1,11 +1,11 @@
-const Sequelize = require("sequelize");
-const db = require("../database/db.js");
+import { STRING } from "sequelize";
+import { sequelize } from "../database/db.js";
 
-module.exports = db.sequelize.define(
+export default sequelize.define(
    "note",
    {
       note: {
-         type: Sequelize.STRING,
+         type: STRING,
       },
    },
    {

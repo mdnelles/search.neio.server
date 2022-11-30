@@ -1,40 +1,40 @@
-const Sequelize = require('sequelize');
-const db = require('../database/db.js');
+import { INTEGER, STRING } from "sequelize";
+import db from "../database/db.js";
 
-module.exports = db.sequelize.define(
-   'log',
+export default db.sequelize.define(
+   "log",
    {
       id: {
-         type: Sequelize.INTEGER,
+         type: INTEGER,
          primaryKey: true,
-         autoIncrement: true
+         autoIncrement: true,
       },
       filename: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       code: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       fnction: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       msg_programmer: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       msg_app: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       ip: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       refer: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       tdate: {
-         type: Sequelize.STRING
-      }
+         type: STRING,
+      },
    },
    {
-      timestamps: false
+      timestamps: false,
    }
 );

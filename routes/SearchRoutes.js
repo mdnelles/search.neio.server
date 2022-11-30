@@ -1,29 +1,32 @@
-const express = require("express"),
-   search = express.Router(),
-   Search = require("../models/Search"),
-   SearchTypes = require("../models/SearchTypes"),
-   Sequelize = require("sequelize"),
-   db = require("../database/db"),
-   fileUpload = require("express-fileupload"),
-   fs = require("fs-extra"),
-   Logfn = require("../components/Logger"),
-   rf = require("./RoutFuctions");
+import { Router } from "express";
+import Search from "../models/Search";
+import { create, findAll, destroy } from "../models/SearchTypes";
+import { QueryTypes } from "sequelize";
+import { sequelize } from "../database/db";
+import fileUpload from "express-fileupload";
+import { remove } from "fs-extra";
+import { get_date, log2db } from "../components/Logger";
+import { verifyToken } from "./RoutFuctions";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+
+const search = Router();
 search.use(fileUpload({ safeFileNames: true, preserveExtension: true }));
 
-let tdate = Logfn.get_date();
-let fileName = __filename.split(/[\\/]/).pop();
+const tdate = get_date();
 
-search.post("/add_entry", rf.verifyToken, async (req, res) => {
+search.post("/add_entry", verifyToken, async (req, res) => {
+   const { referer } = req.headers || "no refer";
    try {
-      ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
-      const { title, keywords, intro, code, fileName } = req.body;
-      const { referer } = req.headers;
-      var date1 = Logfn.get_date();
+      //const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
+      const { title, keywords, intro, code, __filename } = req.body;
+
+      var date1 = get_date();
       var date2 = Math.round(new Date().getTime() / 1000);
       var ttype = req.body.ttype;
 
-      var image = fileName;
+      var image = __filename;
 
       let codeData = {
          ttype,
@@ -40,9 +43,9 @@ search.post("/add_entry", rf.verifyToken, async (req, res) => {
 
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "add_entry.2",
          "Searchroutes.add_entry",
          error,
@@ -51,20 +54,18 @@ search.post("/add_entry", rf.verifyToken, async (req, res) => {
          tdate
       );
       res.json({ status: 201, err: true, msg: "", error });
-      console.log("Err Searchroutes.add_entry: " + err);
    }
 });
 
-search.post("/add_cat", rf.verifyToken, async (req, res) => {
+search.post("/add_cat", verifyToken, async (req, res) => {
+   const ttype = req.body.category || "";
    try {
-      ttype = req.body.category;
-
-      const data = await SearchTypes.create({ ttype });
+      const data = await create({ ttype });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "add_cat",
          error,
          "",
@@ -72,22 +73,22 @@ search.post("/add_cat", rf.verifyToken, async (req, res) => {
          req.headers.referer,
          tdate
       );
-      res.json({ status: 200, err: false, msg: "ok", data });
-      console.log("Err Searchroutes.add_cat: " + err);
+      res.json({ status: 200, err: false, msg: "ok" });
+      console.log("Err Searchroutes.add_cat: " + error);
    }
 });
 
-search.post("/get_ttypes", rf.verifyToken, async (req, res) => {
+search.post("/get_ttypes", verifyToken, async (req, res) => {
    try {
-      const data = await SearchTypes.findAll({
+      const data = await findAll({
          attributes: ["id", "ttype"],
          order: [["ttype", "ASC"]],
       });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "get_types",
          "catch err",
          error,
@@ -99,7 +100,7 @@ search.post("/get_ttypes", rf.verifyToken, async (req, res) => {
    }
 });
 
-search.post("/get_titles", rf.verifyToken, async (req, res) => {
+search.post("/get_titles", verifyToken, async (req, res) => {
    try {
       const data = await Search.findAll({
          attributes: ["id", "title", "date1", "code"],
@@ -110,9 +111,9 @@ search.post("/get_titles", rf.verifyToken, async (req, res) => {
       });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "get_ttype",
          "no data to send",
          "",
@@ -124,7 +125,7 @@ search.post("/get_titles", rf.verifyToken, async (req, res) => {
    }
 });
 
-search.post("/del_entry", rf.verifyToken, async (req, res) => {
+search.post("/del_entry", verifyToken, async (req, res) => {
    try {
       await Search.update(
          { isDeleted: 1 },
@@ -133,9 +134,9 @@ search.post("/del_entry", rf.verifyToken, async (req, res) => {
       );
       res.json({ status: 200, err: false, msg: "ok" });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "del_entry",
          "no data to send",
          error,
@@ -148,14 +149,14 @@ search.post("/del_entry", rf.verifyToken, async (req, res) => {
    }
 });
 
-search.post("/del_cat", rf.verifyToken, async (req, res) => {
+search.post("/del_cat", verifyToken, async (req, res) => {
    try {
-      await SearchTypes.destroy({ where: { id: req.body.id } }, { limit: 1 });
+      await destroy({ where: { id: req.body.id } }, { limit: 1 });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "del_cat",
          "catch",
          error,
@@ -168,7 +169,7 @@ search.post("/del_cat", rf.verifyToken, async (req, res) => {
    }
 });
 
-search.post("/upd_entry", rf.verifyToken, async (req, res) => {
+search.post("/upd_entry", verifyToken, async (req, res) => {
    const { title, code, id } = req.body;
    try {
       const data = await Search.update(
@@ -181,9 +182,9 @@ search.post("/upd_entry", rf.verifyToken, async (req, res) => {
       );
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "upd_entry",
          "catch",
          error,
@@ -196,27 +197,27 @@ search.post("/upd_entry", rf.verifyToken, async (req, res) => {
    }
 });
 
-search.post("/do_query", rf.verifyToken, async (req, res) => {
+search.post("/do_query", verifyToken, async (req, res) => {
    try {
       let query = decodeURI(req.body.query).toString(),
          data = "no data";
-      const data1 = await db.sequelize.query(
+      const data1 = await sequelize.query(
          "SELECT * FROM searches WHERE ( title LIKE :query AND isDeleted = 0 )",
          {
             replacements: {
                query: `%${query}%`,
             },
-            type: Sequelize.QueryTypes.SELECT,
+            type: QueryTypes.SELECT,
          }
       );
 
-      const data2 = await db.sequelize.query(
+      const data2 = await sequelize.query(
          "SELECT * FROM searches WHERE code LIKE :query AND isDeleted = 0 AND !(title LIKE :query) ",
          {
             replacements: {
                query: `%${query}%`,
             },
-            type: Sequelize.QueryTypes.SELECT,
+            type: QueryTypes.SELECT,
          }
       );
 
@@ -229,9 +230,9 @@ search.post("/do_query", rf.verifyToken, async (req, res) => {
       }
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "do_query",
          "catch.2",
          error,
@@ -244,22 +245,22 @@ search.post("/do_query", rf.verifyToken, async (req, res) => {
    }
 });
 
-search.post("/removeFile", rf.verifyToken, (req, res) => {
+search.post("/removeFile", verifyToken, (req, res) => {
    console.log("in removeFile");
    const path = "../client/public/upload/";
-   const fileName = req.body.fileName;
+   const __filename = req.body.__filename;
 
    // With Promises:
-   fs.remove("./tmp/myfile");
-   fs.remove(path + fileName)
+   remove("./tmp/myfile");
+   remove(path + __filename)
       .then(() => {
-         console.log("success delete file: " + fileName);
+         console.log("success delete file: " + __filename);
          res.send("ok").end();
       })
       .catch((err) => {
-         Logfn.log2db(
+         log2db(
             500,
-            fileName,
+            __filename,
             "removeFile",
             "catch",
             err,
@@ -267,12 +268,14 @@ search.post("/removeFile", rf.verifyToken, (req, res) => {
             req.headers.referer,
             tdate
          );
-         console.error("Failed in deleting file " + fileName + " Err: " + err);
+         console.error(
+            "Failed in deleting file " + __filename + " Err: " + err
+         );
          res.send("failed to delete file").end();
       });
 });
 
-search.post("/uploadfile", rf.verifyToken, function (req, res) {
+search.post("/uploadfile", verifyToken, function (req, res) {
    var mime = req.files.files.mimetype.toString();
    let pathToUpload = __dirname
       .toString()
@@ -288,9 +291,9 @@ search.post("/uploadfile", rf.verifyToken, function (req, res) {
    ) {
       req.files.files.mv(pathToUpload + req.files.files.name, function (err) {
          if (err) {
-            Logfn.log2db(
+            log2db(
                500,
-               fileName,
+               __filename,
                "uploadfile",
                "fail during upload",
                err,
@@ -306,9 +309,9 @@ search.post("/uploadfile", rf.verifyToken, function (req, res) {
          }
       });
    } else {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "uploadfile",
          "Illegal file type",
          "",
@@ -321,4 +324,4 @@ search.post("/uploadfile", rf.verifyToken, function (req, res) {
    }
 });
 
-module.exports = search;
+export default search;

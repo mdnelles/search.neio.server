@@ -1,14 +1,20 @@
-const express = require("express"),
-   users = express.Router(),
-   jwt = require("jsonwebtoken"),
-   bcrypt = require("bcrypt"),
-   User = require("../models/User"),
-   Logfn = require("../components/Logger"),
-   rf = require("./RoutFuctions");
+import { Router } from "express";
 
-let tdate = Logfn.get_date();
+import { sign } from "jsonwebtoken";
+import { hash as _hash } from "bcrypt";
+import { findOne, create, update, findAll } from "../models/User";
+import { get_date, log2db } from "../components/Logger";
+import { verifyToken } from "./RoutFuctions";
+import { fileURLToPath } from "url";
+import * as dotenv from "dotenv";
+const { NODE_ADMIN_EMAIL, NODE_ADMIN_PASSWORD, NODE_SECRET } = dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+
+const users = Router();
+
+let tdate = get_date();
 let fileName = __filename.split(/[\\/]/).pop();
-const { NODE_ADMIN_EMAIL, NODE_ADMIN_PASSWORD, NODE_DB_HOST } = process.env;
 
 users.post("/register", async (req, res) => {
    try {
@@ -22,7 +28,7 @@ users.post("/register", async (req, res) => {
          created: today,
       };
 
-      let user = await User.findOne({
+      let user = await findOne({
          where: {
             email: req.body.email,
             isdeleted: 0,
@@ -30,21 +36,20 @@ users.post("/register", async (req, res) => {
       });
 
       if (!user) {
-         bcrypt.hash(req.body.password, 10, (err, hash) => {
+         _hash(req.body.password, 10, (err, hash) => {
             userData.password = hash;
          });
-         data = await User.create(userData);
+         const data = await create(userData);
          res.json({ status: 200, err: false, msg: "ok", data });
       } else {
          res.json({
             status: 202,
             err: false,
             msg: "user account already exists",
-            data,
          });
       }
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
          fileName,
          "register.2",
@@ -68,9 +73,9 @@ users.all("/login", (req, res) => {
       password === NODE_ADMIN_PASSWORD
    ) {
       // successful login
-      let token = jwt.sign(
+      let token = sign(
          { exp: Math.floor(Date.now() / 1000) + 60 * 60 * 10000, data: email },
-         process.env.NODE_SECRET
+         NODE_SECRET
       );
       console.log("token issued: " + token);
       res.json({ status: 200, err: false, msg: "ok", token });
@@ -80,7 +85,7 @@ users.all("/login", (req, res) => {
       });
 
       res.json({ status: 201, err: true, msg: "login failed" });
-      Logfn.log2db(
+      log2db(
          500,
          fileName,
          "login password failed",
@@ -93,27 +98,27 @@ users.all("/login", (req, res) => {
    }
 });
 
-users.get("/adminpanel", rf.verifyToken, async (req, res) => {
+users.get("/adminpanel", verifyToken, async (req, res) => {
    try {
       const { id } = req.body;
-      const user = await User.findOne({ where: { id } });
+      const user = await findOne({ where: { id } });
       let msg = "User does not exist";
-      if (!!user) msg = "user found";
+      if (user) msg = "user found";
       res.json({ status: 200, err: false, msg, data: user });
    } catch (error) {
       res.json({ status: 201, err: true, msg: "", error });
    }
 });
 
-users.post("/remove_user", rf.verifyToken, async (req, res) => {
+users.post("/remove_user", verifyToken, async (req, res) => {
    try {
-      const data = await User.update(
+      const data = await update(
          { isDeleted: 1 },
          { returning: true, where: { uuid: req.body.theUuid } }
       );
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
          fileName,
          "remove_user",
@@ -123,22 +128,22 @@ users.post("/remove_user", rf.verifyToken, async (req, res) => {
          req.headers.referer,
          tdate
       );
-      id;
+
       console.log("Client Error @ UserFunctions > remove_user" + error);
       res.json({ status: 201, err: true, msg: "", error });
    }
 });
 
-users.post("/getusers", rf.verifyToken, async (req, res) => {
+users.post("/getusers", verifyToken, async (req, res) => {
    try {
-      const data = await User.findAll({
+      const data = await findAll({
          where: {
             isDeleted: 0,
          },
       });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
          fileName,
          "getusers",
@@ -152,8 +157,8 @@ users.post("/getusers", rf.verifyToken, async (req, res) => {
    }
 });
 
-users.post("/islogged", rf.verifyToken, (req, res) => {
+users.post("/islogged", verifyToken, (req, res) => {
    res.status(200).json(true).end();
 });
 
-module.exports = users;
+export default users;

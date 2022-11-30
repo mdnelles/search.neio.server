@@ -1,25 +1,25 @@
-const express = require("express"),
-   todo = express.Router(),
-   Todo = require("../models/todo"),
-   Sequelize = require("sequelize"),
-   db = require("../database/db"),
-   Logfn = require("../components/Logger"),
-   rf = require("./RoutFuctions");
+import { Router } from "express";
+import { create, destroy, update } from "../models/todo";
+import { sequelize } from "../database/db";
+import { get_date, log2db } from "../components/Logger";
+import { verifyToken } from "./RoutFuctions";
+import { fileURLToPath } from "url";
 
-let tdate = Logfn.get_date();
-let fileName = __filename.split(/[\\/]/).pop();
+const todo = Router();
+const __filename = fileURLToPath(import.meta.url);
+let tdate = get_date();
 
-todo.post("/add_entry", rf.verifyToken, async (req, res) => {
+todo.post("/add_entry", verifyToken, async (req, res) => {
    const { title, details, due } = req.body;
    const { referer } = req.headers;
    try {
-      let data = await Todo.create({ title, details, due });
+      let data = await create({ title, details, due });
 
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "add_entry.2",
          "todoroutes.add_entry",
          error,
@@ -32,14 +32,14 @@ todo.post("/add_entry", rf.verifyToken, async (req, res) => {
    }
 });
 
-todo.post("/del_entry", rf.verifyToken, async (req, res) => {
+todo.post("/del_entry", verifyToken, async (req, res) => {
    try {
-      await Todo.destroy({ where: { id: req.body.id } }, { limit: 1 });
+      await destroy({ where: { id: req.body.id } }, { limit: 1 });
       res.json({ status: 200, err: false, msg: "ok" });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "del_entry",
          "no data to send",
          error,
@@ -51,10 +51,10 @@ todo.post("/del_entry", rf.verifyToken, async (req, res) => {
    }
 });
 
-todo.post("/upd_entry", rf.verifyToken, async (req, res) => {
+todo.post("/upd_entry", verifyToken, async (req, res) => {
    try {
       const { title = "", details = "", due = "", id = 0 } = req.body;
-      await Todo.update(
+      await update(
          {
             title,
             details,
@@ -66,9 +66,9 @@ todo.post("/upd_entry", rf.verifyToken, async (req, res) => {
 
       res.json({ status: 200, err: false, msg: "ok" });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "upd_entry",
          "catch",
          error,
@@ -81,14 +81,14 @@ todo.post("/upd_entry", rf.verifyToken, async (req, res) => {
    }
 });
 
-todo.post("/get_todo", rf.verifyToken, async (req, res) => {
+todo.post("/get_todo", verifyToken, async (req, res) => {
    try {
-      const data = await db.sequelize.query("SELECT * FROM todos ");
+      const data = await sequelize.query("SELECT * FROM todos ");
       res.json({ status: 200, err: false, msg: "ok", data: data[0] });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
-         fileName,
+         __filename,
          "do_query",
          "catch.2",
          error,
@@ -96,9 +96,9 @@ todo.post("/get_todo", rf.verifyToken, async (req, res) => {
          req.headers.referer,
          tdate
       );
-      console.log("err:" + err);
+      console.log("err:" + error);
       res.json({ status: 200, err: true, msg: "", error });
    }
 });
 
-module.exports = todo;
+export default todo;

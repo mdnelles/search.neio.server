@@ -1,6 +1,6 @@
 const express = require("express"),
    note = express.Router(),
-   Note = require("../models/Note"),
+   Note = require("../models/Note").default,
    Sequelize = require("sequelize"),
    db = require("../database/db"),
    Logfn = require("../components/Logger"),

@@ -1,11 +1,15 @@
-const Sequelize = require("sequelize");
+import * as dotenv from "dotenv";
+import Sequelize from "sequelize";
+
+const env = dotenv.config();
 const db = {};
+
 const sequelize = new Sequelize(
-   process.env.NODE_DB_NAME,
-   process.env.NODE_DB_USER,
-   process.env.NODE_DB_PASS,
+   env.NODE_DB_NAME,
+   env.NODE_DB_USER,
+   env.NODE_DB_PASS,
    {
-      host: process.env.NODE_DB_HOST,
+      host: env.NODE_DB_HOST,
       dialect: "mysql",
       logging: console.log,
       freezeTableName: true,
@@ -22,4 +26,4 @@ const sequelize = new Sequelize(
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-module.exports = db;
+export default db;
