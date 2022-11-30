@@ -39,12 +39,12 @@ var User = require("./routes/UserRoutes"),
    Note = require("./routes/Note"),
    Search = require("./routes/SearchRoutes");
 
-app.use("/user", User);
-app.use("/dba", Dba);
-app.use("/logs", Logs);
-app.use("/note", Note);
-app.use("/search", Search);
-app.use("/todo", Todo);
+app.use("/sv-user", User);
+app.use("/sv-dba", Dba);
+app.use("/sv-logs", Logs);
+app.use("/sv-note", Note);
+app.use("/sv-search", Search);
+app.use("/sv-todo", Todo);
 
 // serve static assets if in production
 if (process.env.NODE_ENV === "production") {
