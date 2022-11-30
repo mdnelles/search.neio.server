@@ -1,6 +1,6 @@
-const Log = require("../models/Logs");
+import { create } from "../models/Logs";
 
-exports.log2db = (
+export const log2db = (
    code,
    filename,
    fnction,
@@ -30,10 +30,10 @@ exports.log2db = (
       refer,
       tdate,
    };
-   Log.create(logData);
+   create(logData);
 };
 
-exports.get_date = () => {
+export function get_date() {
    let d = new Date();
    let month = parseInt(d.getMonth());
    month += 1;
@@ -50,4 +50,4 @@ exports.get_date = () => {
       " " +
       d.getSeconds();
    return tdate;
-};
+}

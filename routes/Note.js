@@ -1,23 +1,23 @@
-const express = require("express"),
-   note = express.Router(),
-   Note = require("../models/Note"),
-   Sequelize = require("sequelize"),
-   db = require("../database/db"),
-   Logfn = require("../components/Logger"),
-   rf = require("./RoutFuctions");
+import { Router } from "express";
+import Note from "../models/Note";
+import { sequelize } from "../database/db";
+import { get_date, log2db } from "../components/Logger";
+import { verifyToken } from "./RoutFuctions";
+import { fileURLToPath } from "url";
 
-let tdate = Logfn.get_date();
+const __filename = fileURLToPath(import.meta.url);
+const note = Router();
+let tdate = get_date();
 let fileName = __filename.split(/[\\/]/).pop();
 
-note.post("/upd_entry", rf.verifyToken, async (req, res) => {
+note.post("/upd_entry", verifyToken, async (req, res) => {
    try {
-      const { idnotepad } = req.body;
       let data = await Note.sequelize.truncate({ cascade: true });
       data = await Note.create({ note });
 
-      res.json({ status: 200, err: false, msg: "ok" });
+      res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
          fileName,
          "upd_entry",
@@ -28,16 +28,16 @@ note.post("/upd_entry", rf.verifyToken, async (req, res) => {
          tdate
       );
       console.log("err:" + error);
-      res.json({ status: 201, err: true, msg: "", error, data });
+      res.json({ status: 201, err: true, msg: "", error });
    }
 });
 
-note.post("/fetch", rf.verifyToken, async (req, res) => {
+note.post("/fetch", verifyToken, async (req, res) => {
    try {
-      const data = await db.sequelize.query("SELECT * FROM notes");
+      const data = await sequelize.query("SELECT * FROM notes");
       res.json({ status: 200, err: false, msg: "ok", data: data[0] });
    } catch (error) {
-      Logfn.log2db(
+      log2db(
          500,
          fileName,
          "do_query",
@@ -47,9 +47,9 @@ note.post("/fetch", rf.verifyToken, async (req, res) => {
          req.headers.referer,
          tdate
       );
-      console.log("err:" + err);
+      console.log(error);
       res.json({ status: 200, err: true, msg: "", error });
    }
 });
 
-module.exports = note;
+export default note;

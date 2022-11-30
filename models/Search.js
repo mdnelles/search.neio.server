@@ -1,44 +1,44 @@
-const Sequelize = require('sequelize');
-const db = require('../database/db.js');
+import { INTEGER, STRING } from "sequelize";
+import { sequelize } from "../database/db.js";
 
-module.exports = db.sequelize.define(
-   'search',
+export default sequelize.define(
+   "search",
    {
       id: {
-         type: Sequelize.INTEGER,
+         type: INTEGER,
          primaryKey: true,
-         autoIncrement: true
+         autoIncrement: true,
       },
       ttype: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       title: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       keywords: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       intro: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       code: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       date1: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       date2: {
-         type: Sequelize.STRING
+         type: STRING,
       },
       isDeleted: {
-         type: Sequelize.INTEGER,
-         defaultValue: 0
+         type: INTEGER,
+         defaultValue: 0,
       },
       image: {
-         type: Sequelize.STRING
-      }
+         type: STRING,
+      },
    },
    {
-      timestamps: false
+      timestamps: false,
    }
 );

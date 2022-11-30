@@ -1,20 +1,27 @@
-require("dotenv").config();
+import * as dotenv from "dotenv";
+const env = dotenv.config();
 
-var express = require("express"),
-   cors = require("cors"),
-   app = express(),
-   bodyParser = require("body-parser"),
-   port = process.env.PORT || 5010,
-   session = require("express-session"),
-   path = require("path");
+import express from "express";
+import cors from "cors";
+import { json, urlencoded } from "body-parser";
+import session from "express-session";
+import path, { resolve } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const port = env.PORT || 5010;
 
 app.use(
    session({
-      secret: process.env.NODE_SECRET,
+      secret: env.NODE_SECRET,
       proxy: true,
+
       httpOnly: false,
-      resave: process.env.NODE_COOKIE_RESAVE,
-      saveUninitialized: process.env.NODE_COOKIE_SAVE_UNINITIALZED,
+      resave: env.NODE_COOKIE_RESAVE,
+      saveUninitialized: env.NODE_COOKIE_SAVE_UNINITIALZED,
       cookie: {
          secure: false,
          httpOnly: false,
@@ -24,20 +31,20 @@ app.use(
 );
 app.use(cors());
 // create application/json parser
-var jsonParser = bodyParser.json();
+var jsonParser = json();
 
 // create application/x-www-form-urlencoded parser
-var urlencodedParser = bodyParser.urlencoded({ extended: false });
+var urlencodedParser = urlencoded({ extended: false });
 
 app.use(jsonParser);
 app.use(urlencodedParser);
 
-var User = require("./routes/UserRoutes"),
-   Dba = require("./routes/DbaRoutes"),
-   Logs = require("./routes/LogRoutes"),
-   Todo = require("./routes/Todo"),
-   Note = require("./routes/Note"),
-   Search = require("./routes/SearchRoutes");
+import User from "./routes/UserRoutes";
+import Dba from "./routes/DbaRoutes";
+import Logs from "./routes/LogRoutes";
+import Todo from "./routes/Todo";
+import Note from "./routes/Note";
+import Search from "./routes/SearchRoutes";
 
 app.use("/sv-user", User);
 app.use("/sv-dba", Dba);
@@ -47,12 +54,12 @@ app.use("/sv-search", Search);
 app.use("/sv-todo", Todo);
 
 // serve static assets if in production
-if (process.env.NODE_ENV === "production") {
+if (env.NODE_ENV === "production") {
    // set static folder
-   app.use(express.static("client/build"));
+   //app.use(static("client/build"));
 
    app.get("*", (req, res) => {
-      res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+      res.sendFile(resolve(__dirname, "client", "build", "index.html"));
    });
 }
 
