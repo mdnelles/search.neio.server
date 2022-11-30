@@ -1,0 +1,31 @@
+name: NodeJS CI push to server
+
+on:
+   pull_request:
+      paths-ignore:
+         - "**.md"
+   push:
+      branches:
+         - main
+         - releases/*
+      paths-ignore:
+         - "**.md"
+
+jobs:
+   build:
+      runs-on: self-hosted
+
+      steps:
+         - uses: actions/checkout@v3
+
+         - name: Setup Node 16.x
+           uses: actions/setup-node@v3
+           with:
+              node-version: 16.x
+              cache: npm
+         #pm2 is set to --watch so it will restart express on change
+         - name: Build
+           run: |
+              cp ./* -R ../../../../../nodejs
+              cd ../../../../../nodejs
+              npm ci
