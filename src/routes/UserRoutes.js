@@ -4,7 +4,8 @@ import { fileURLToPath } from "url";
 import * as dotenv from "dotenv";
 import db from "../models/User.js";
 import { get_date, log2db } from "../components/Logger.js";
-const { NODE_ADMIN_EMAIL, NODE_ADMIN_PASSWORD, NODE_SECRET } = dotenv.config();
+const { NODE_ADMIN_EMAIL, NODE_ADMIN_PASSWORD, NODE_SECRET } =
+   dotenv.config().parsed;
 
 const __filename = fileURLToPath(import.meta.url);
 
