@@ -1,4 +1,4 @@
-import sign from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { hash as _hash } from "bcrypt";
 import { fileURLToPath } from "url";
 import * as dotenv from "dotenv";
@@ -62,15 +62,13 @@ export const register = async (req, res) => {
 
 export const login = (req, res) => {
    const { email = "na", password = "na" } = req.body;
-   console.log("NODE_ADMIN_EMAIL: " + NODE_ADMIN_EMAIL);
-   console.log("NODE_ADMIN_PASSWORD: " + NODE_ADMIN_PASSWORD);
    if (
       (email === NODE_ADMIN_EMAIL ||
          email === `${NODE_ADMIN_EMAIL}@gmail.com`) &&
       password === NODE_ADMIN_PASSWORD
    ) {
       // successful login
-      let token = sign(
+      let token = jwt.sign(
          { exp: Math.floor(Date.now() / 1000) + 60 * 60 * 10000, data: email },
          NODE_SECRET
       );
