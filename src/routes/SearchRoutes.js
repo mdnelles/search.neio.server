@@ -113,16 +113,6 @@ export const get_titles = async (req, res) => {
       });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "get_ttype",
-         "no data to send",
-         "",
-         req,
-         req.headers.referer,
-         tdate``
-      );
       res.json({ err: true, msg: "error", error, status: 201 });
    }
 };
