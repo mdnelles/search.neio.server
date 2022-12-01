@@ -1,5 +1,5 @@
-import * as db from "../models/Todo.js";
-import * as dbc from "../database/db.js";
+import * as Todo from "../models/Todo.js";
+import db from "../database/db.js";
 import { get_date, log2db } from "../components/Logger.js";
 import { fileURLToPath } from "url";
 
@@ -10,7 +10,7 @@ export const add_entry = async (req, res) => {
    const { title, details, due } = req.body;
    const { referer } = req.headers;
    try {
-      let data = await db.create({ title, details, due });
+      let data = await Todo.create({ title, details, due });
 
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
@@ -31,7 +31,7 @@ export const add_entry = async (req, res) => {
 
 export const del_entry = async (req, res) => {
    try {
-      await db.destroy({ where: { id: req.body.id } }, { limit: 1 });
+      await Todo.destroy({ where: { id: req.body.id } }, { limit: 1 });
       res.json({ status: 200, err: false, msg: "ok" });
    } catch (error) {
       log2db(
@@ -51,7 +51,7 @@ export const del_entry = async (req, res) => {
 export const upd_entry = async (req, res) => {
    try {
       const { title = "", details = "", due = "", id = 0 } = req.body;
-      await db.update(
+      await Todo.update(
          {
             title,
             details,
@@ -80,7 +80,7 @@ export const upd_entry = async (req, res) => {
 
 export const get_todo = async (req, res) => {
    try {
-      const data = await dbc.query("SELECT * FROM todos ");
+      const data = await db.query("SELECT * FROM todos ");
       res.json({ status: 200, err: false, msg: "ok", data: data[0] });
    } catch (error) {
       log2db(
