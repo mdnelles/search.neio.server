@@ -1,5 +1,5 @@
 import * as Todo from "../models/Todo.js";
-import db from "../database/db.js";
+//import db from "../database/db.js";
 import { get_date, log2db } from "../components/Logger.js";
 import { fileURLToPath } from "url";
 
@@ -80,7 +80,8 @@ export const upd_entry = async (req, res) => {
 
 export const get_todo = async (req, res) => {
    try {
-      const data = await db.query("SELECT * FROM todos ");
+      //const data = await db.query("SELECT * FROM todos ");
+      const data = await Todo.findAll();
       res.json({ status: 200, err: false, msg: "ok", data: data[0] });
    } catch (error) {
       log2db(
