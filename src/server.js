@@ -28,24 +28,23 @@ app.use(jsonParser);
 app.use(urlencodedParser);
 app.use(helmet());
 
-import * as user from "./routes/UserRoutes.js";
-import * as logs from "./routes/LogRoutes.js";
+//import * as user from "./routes/UserRoutes.js";
+//import * as logs from "./routes/LogRoutes.js";
 import * as todo from "./routes/Todo.js";
-import * as note from "./routes/Note.js";
 import * as search from "./routes/SearchRoutes.js";
 
-app.post("/sv-user/register", user.register);
-app.post("/sv-user/login", user.login);
-app.post("/sv-user/adminpanel", verifyToken, user.adminpanel);
-app.post("/sv-user/remove_user", verifyToken, user.remove_user);
-app.post("/sv-user/get_user", verifyToken, user.getusers);
-app.post("/sv-user/islogged", user.islogged);
+//app.post("/sv-user/register", user.register);
+//app.post("/sv-user/login", user.login);
+//app.post("/sv-user/adminpanel", verifyToken, user.adminpanel);
+//app.post("/sv-user/remove_user", verifyToken, user.remove_user);
+//app.post("/sv-user/get_user", verifyToken, user.getusers);
+//app.post("/sv-user/islogged", user.islogged);
 
-app.post("/sv-logs/get_logs", verifyToken, logs.get_logs);
-app.post("/sv-logs/get_logcount", verifyToken, logs.get_logcount);
+//app.post("/sv-logs/get_logs", verifyToken, logs.get_logs);
+//app.post("/sv-logs/get_logcount", verifyToken, logs.get_logcount);
 
-app.post("/sv-note/upd_entry", verifyToken, note.upd_entry);
-app.post("/sv-note/fetch", verifyToken, note.fetch);
+//app.post("/sv-note/upd_entry", verifyToken, note.upd_entry);
+//app.post("/sv-note/fetch", verifyToken, note.fetch);
 
 app.post("/sv-search/add_entry", verifyToken, search.add_entry);
 app.post("/sv-search/add_cat", verifyToken, search.add_cat);
