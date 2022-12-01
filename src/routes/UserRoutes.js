@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { hash as _hash } from "bcrypt";
 import { fileURLToPath } from "url";
 import * as dotenv from "dotenv";
-import db from "../models/User.js";
+import { User } from "../models/User.js";
 import { get_date, log2db } from "../components/Logger.js";
 const { NODE_ADMIN_EMAIL, NODE_ADMIN_PASSWORD, NODE_SECRET } =
    dotenv.config().parsed;
@@ -24,7 +24,7 @@ export const register = async (req, res) => {
          created: today,
       };
 
-      let user = await db.findOne({
+      let user = await User.findOne({
          where: {
             email: req.body.email,
             isdeleted: 0,
@@ -35,7 +35,7 @@ export const register = async (req, res) => {
          _hash(req.body.password, 10, (err, hash) => {
             userData.password = hash;
          });
-         const data = await db.create(userData);
+         const data = await User.create(userData);
          res.json({ status: 200, err: false, msg: "ok", data });
       } else {
          res.json({
@@ -96,7 +96,7 @@ export const login = (req, res) => {
 export const adminpanel = async (req, res) => {
    try {
       const { id } = req.body;
-      const user = await db.findOne({ where: { id } });
+      const user = await User.findOne({ where: { id } });
       let msg = "User does not exist";
       if (user) msg = "user found";
       res.json({ status: 200, err: false, msg, data: user });
@@ -107,7 +107,7 @@ export const adminpanel = async (req, res) => {
 
 export const remove_user = async (req, res) => {
    try {
-      const data = await db.update(
+      const data = await User.update(
          { isDeleted: 1 },
          { returning: true, where: { uuid: req.body.theUuid } }
       );
@@ -131,7 +131,7 @@ export const remove_user = async (req, res) => {
 
 export const getusers = async (req, res) => {
    try {
-      const data = await db.findAll({
+      const data = await User.findAll({
          where: {
             isDeleted: 0,
          },
