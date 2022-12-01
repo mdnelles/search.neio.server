@@ -1,7 +1,7 @@
 import { STRING } from "sequelize";
 import { db } from "../database/db.js";
 
-export const Notes = db.sequelize.define(
+export const Note = db.sequelize.define(
    "note",
    {
       note: {
