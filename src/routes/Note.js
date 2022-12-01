@@ -1,5 +1,5 @@
-import Note from "../models/Note.js";
-import db from "../database/db.js";
+import { Note } from "../models/Note.js";
+import { db } from "../database/db.js";
 import { get_date, log2db } from "../components/Logger.js";
 import { fileURLToPath } from "url";
 

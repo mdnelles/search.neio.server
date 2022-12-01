@@ -1,7 +1,7 @@
 import { INTEGER, STRING, DATE, NOW } from "sequelize";
-import db from "../database/db.js";
+import { db } from "../database/db.js";
 
-export default db.sequelize.define(
+export const Session = db.sequelize.define(
    "session",
    {
       id: {

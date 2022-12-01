@@ -1,4 +1,4 @@
-import db from "../database/db.js";
+import { db } from "../database/db.js";
 import { QueryTypes } from "sequelize";
 import { get_date, log2db } from "../components/Logger.js";
 

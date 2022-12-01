@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 import Sequelize from "sequelize";
 
 const env = dotenv.config().parsed;
-const db = {};
+export const db = {};
 
 const sequelize = new Sequelize(
    env.NODE_DB_NAME,
@@ -25,5 +25,3 @@ const sequelize = new Sequelize(
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-
-export default db;
