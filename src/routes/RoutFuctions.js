@@ -70,7 +70,7 @@ export function verifyToken(req, res, next) {
    const caller = req.body.caller || "NA";
 
    try {
-      tokenTest(req.headers.token, res, jwt, caller, next);
+      tokenTest(token, res, jwt, caller, next);
    } catch (error) {
       console.log("token fail" + caller + "token fail=" + token);
       console.log(error);
