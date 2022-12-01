@@ -23,6 +23,15 @@ export const add_entry = async (req, res) => {
       //const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
       const { title, keywords, intro, code, __filename } = req.body;
 
+      let tmp = await Search.findOne({
+         attributes: ["id"],
+         order: [["id", "DESC"]],
+      });
+
+      const id = parseInt(tmp.id) + 1;
+
+      var image = __filename;
+
       var date1 = get_date();
       var date2 = Math.round(new Date().getTime() / 1000);
       var ttype = req.body.ttype;
@@ -30,6 +39,7 @@ export const add_entry = async (req, res) => {
       var image = __filename;
 
       let codeData = {
+         id,
          ttype,
          title,
          keywords,
@@ -82,7 +92,7 @@ export const add_cat = async (req, res) => {
 export const get_ttypes = async (req, res) => {
    try {
       const data = await Search.findAll({
-         attributes: ["id", "ttype"],
+         attributes: ["ttype"],
          order: [["ttype", "ASC"]],
          group: ["ttype"],
       });
