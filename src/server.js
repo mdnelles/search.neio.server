@@ -8,7 +8,7 @@ import path, { resolve } from "path";
 import { fileURLToPath } from "url";
 import { verifyToken } from "./routes/RoutFuctions.js";
 
-const env = dotenv.config();
+const env = dotenv.config().parsed;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

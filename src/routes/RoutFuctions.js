@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { log2db } from "../components/Logger.js";
 import { fileURLToPath } from "url";
 import * as dotenv from "dotenv";
-const env = dotenv.config();
+const env = dotenv.config().parsed;
 const __filename = fileURLToPath(import.meta.url);
 
 const get_date = () => {
