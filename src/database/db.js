@@ -9,8 +9,11 @@ console.log(dotenv.config());
 
 const sequelize = new Sequelize(NODE_DB_NAME, NODE_DB_USER, NODE_DB_PASS, {
    port: 3306,
-   host: NODE_DB_HOST,
+   host: "127.0.0.1",
    dialect: "mysql",
+   dialectOptions: {
+      socketPath: "/var/run/mysqld/mysql.sock",
+   },
 
    pool: {
       max: 5,
