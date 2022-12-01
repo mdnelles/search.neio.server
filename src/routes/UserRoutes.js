@@ -1,22 +1,17 @@
-import { Router } from "express";
-
-import { sign } from "jsonwebtoken";
+import sign from "jsonwebtoken";
 import { hash as _hash } from "bcrypt";
-import { findOne, create, update, findAll } from "../models/User";
-import { get_date, log2db } from "../components/Logger";
-import { verifyToken } from "./RoutFuctions";
 import { fileURLToPath } from "url";
 import * as dotenv from "dotenv";
+import db from "../models/User.js";
+import { get_date, log2db } from "../components/Logger.js";
 const { NODE_ADMIN_EMAIL, NODE_ADMIN_PASSWORD, NODE_SECRET } = dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 
-const users = Router();
-
 let tdate = get_date();
 let fileName = __filename.split(/[\\/]/).pop();
 
-users.post("/register", async (req, res) => {
+export const register = async (req, res) => {
    try {
       var today = new Date();
       const userData = {
@@ -28,7 +23,7 @@ users.post("/register", async (req, res) => {
          created: today,
       };
 
-      let user = await findOne({
+      let user = await db.findOne({
          where: {
             email: req.body.email,
             isdeleted: 0,
@@ -39,7 +34,7 @@ users.post("/register", async (req, res) => {
          _hash(req.body.password, 10, (err, hash) => {
             userData.password = hash;
          });
-         const data = await create(userData);
+         const data = await db.create(userData);
          res.json({ status: 200, err: false, msg: "ok", data });
       } else {
          res.json({
@@ -62,9 +57,9 @@ users.post("/register", async (req, res) => {
       res.json({ status: 200, err: true, msg: "", error });
       console.log(error);
    }
-});
+};
 
-users.all("/login", (req, res) => {
+export const login = (req, res) => {
    const { email = "na", password = "na" } = req.body;
 
    if (
@@ -96,23 +91,23 @@ users.all("/login", (req, res) => {
          tdate
       );
    }
-});
+};
 
-users.get("/adminpanel", verifyToken, async (req, res) => {
+export const adminpanel = async (req, res) => {
    try {
       const { id } = req.body;
-      const user = await findOne({ where: { id } });
+      const user = await db.findOne({ where: { id } });
       let msg = "User does not exist";
       if (user) msg = "user found";
       res.json({ status: 200, err: false, msg, data: user });
    } catch (error) {
       res.json({ status: 201, err: true, msg: "", error });
    }
-});
+};
 
-users.post("/remove_user", verifyToken, async (req, res) => {
+export const remove_user = async (req, res) => {
    try {
-      const data = await update(
+      const data = await db.update(
          { isDeleted: 1 },
          { returning: true, where: { uuid: req.body.theUuid } }
       );
@@ -132,11 +127,11 @@ users.post("/remove_user", verifyToken, async (req, res) => {
       console.log("Client Error @ UserFunctions > remove_user" + error);
       res.json({ status: 201, err: true, msg: "", error });
    }
-});
+};
 
-users.post("/getusers", verifyToken, async (req, res) => {
+export const getusers = async (req, res) => {
    try {
-      const data = await findAll({
+      const data = await db.findAll({
          where: {
             isDeleted: 0,
          },
@@ -155,10 +150,8 @@ users.post("/getusers", verifyToken, async (req, res) => {
       );
       res.json({ status: 201, err: true, msg: "", error });
    }
-});
+};
 
-users.post("/islogged", verifyToken, (req, res) => {
+export const islogged = (req, res) => {
    res.status(200).json(true).end();
-});
-
-export default users;
+};

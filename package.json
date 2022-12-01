@@ -2,6 +2,7 @@
    "name": "search-code-base-server",
    "version": "1.1.03",
    "description": "NodeJS TypeScript Server",
+   "type": "module",
    "engines": {
       "node": "^18.0.0",
       "npm": "^8.0.0"
@@ -10,11 +11,11 @@
    "scripts": {
       "update:packages": "node wipe-dependencies.js && rm -rf node_modules && npm update --save-dev && npm update --save",
       "client-install": "npm install --prefix client",
-      "start": "node server.js",
-      "server": "nodemon server.js --ignore client",
+      "start": "node ./src/server.js",
+      "server": "nodemon ./src/server.js --ignore client",
       "lint:init": "./node_modules/.bin/eslint --init",
-      "lint": "eslint .  --ext .js",
-      "lint:fix": "eslint --fix .  --ext .js"
+      "lint": "eslint ./src/  --ext .js",
+      "lint:fix": "eslint --fix ./src/  --ext .js"
    },
    "adminStart": true,
    "keywords": [
@@ -29,6 +30,7 @@
       "array-sort": "^1.0.0",
       "bcrypt": "^5.1.0",
       "body-parser": "*",
+      "compression": "^1.7.4",
       "concurrently": "*",
       "cookie-parser": "^1.4.6",
       "cors": "*",
@@ -39,6 +41,7 @@
       "flatted": "^3.2.7",
       "formidable": "^2.0.1",
       "fs-extra": "^11.1.0",
+      "helmet": "^6.0.1",
       "jquery": "^3.6.1",
       "jsonwebtoken": "^8.5.1",
       "morgan": "^1.10.0",

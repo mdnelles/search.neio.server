@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Logfn } from "../components/Logger";
+import { log2db } from "../components/Logger.js";
 import { fileURLToPath } from "url";
 import * as dotenv from "dotenv";
 const env = dotenv.config();
@@ -40,7 +40,7 @@ const tokenTest = (token, res, jwt, caller, next) => {
                error,
             });
          } else {
-            Logfn.log2db(
+            log2db(
                200,
                fileName,
                "Token Test",
