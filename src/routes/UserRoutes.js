@@ -61,7 +61,8 @@ export const register = async (req, res) => {
 
 export const login = (req, res) => {
    const { email = "na", password = "na" } = req.body;
-
+   console.log("NODE_ADMIN_EMAIL: " + NODE_ADMIN_EMAIL);
+   console.log("NODE_ADMIN_PASSWORD: " + NODE_ADMIN_PASSWORD);
    if (
       (email === NODE_ADMIN_EMAIL ||
          email === `${NODE_ADMIN_EMAIL}@gmail.com`) &&
