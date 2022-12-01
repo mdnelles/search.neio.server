@@ -31,7 +31,7 @@ export const log2db = (
          refer,
          tdate,
       };
-      log.create(logData);
+      //log.create(logData);
    } catch (error) {
       console.log("Error");
       console.log(error);
