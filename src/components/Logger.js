@@ -10,27 +10,32 @@ export const log2db = (
    refer,
    tdate
 ) => {
-   const ip =
-      !!req && (!!req.headers || req.socket)
-         ? req.headers["x-forwarded-for"] ||
-           req.socket.remoteAddress ||
-           "0.0.0.0"
-         : "0.0.0.0";
-   console.log(msg_app);
-   if (typeof msg_app && msg_app !== undefined)
-      msg_app = JSON.stringify(msg_app);
-   msg_app = msg_app.substring(0, 499);
-   const logData = {
-      code,
-      filename,
-      fnction,
-      msg_programmer,
-      msg_app,
-      ip,
-      refer,
-      tdate,
-   };
-   log.create(logData);
+   try {
+      const ip =
+         !!req && (!!req.headers || req.socket)
+            ? req.headers["x-forwarded-for"] ||
+              req.socket.remoteAddress ||
+              "0.0.0.0"
+            : "0.0.0.0";
+      console.log(msg_app);
+      if (typeof msg_app && msg_app !== undefined)
+         msg_app = JSON.stringify(msg_app);
+      msg_app = msg_app.substring(0, 499);
+      const logData = {
+         code,
+         filename,
+         fnction,
+         msg_programmer,
+         msg_app,
+         ip,
+         refer,
+         tdate,
+      };
+      log.create(logData);
+   } catch (error) {
+      console.log("Error");
+      console.log(error);
+   }
 };
 
 export function get_date() {
