@@ -1,5 +1,5 @@
-import * as Todo from "../models/Todo.js";
-//import db from "../database/db.js";
+import { Todo } from "../models/Todo.js";
+//import { db } from "../database/db.js";
 import { get_date, log2db } from "../components/Logger.js";
 import { fileURLToPath } from "url";
 

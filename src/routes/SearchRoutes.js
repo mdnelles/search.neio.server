@@ -1,13 +1,12 @@
 import { Router } from "express";
-import * as searchdb from "../models/Search.js";
+import { Search } from "../models/Search.js";
 import { fileURLToPath } from "url";
 import { QueryTypes } from "sequelize";
 import fileUpload from "express-fileupload";
 import { remove } from "fs-extra";
 import path from "path";
 
-//import * as searchdb from "../models/SearchTypes.js";
-import db from "../database/db.js";
+import { db } from "../database/db.js";
 import { get_date, log2db } from "../components/Logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -41,7 +40,7 @@ export const add_entry = async (req, res) => {
          image,
       };
 
-      const data = await searchdb.create(codeData);
+      const data = await Search.create(codeData);
 
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
@@ -62,7 +61,7 @@ export const add_entry = async (req, res) => {
 export const add_cat = async (req, res) => {
    const ttype = req.body.category || "";
    try {
-      const data = await searchdb.create({ ttype });
+      const data = await Search.create({ ttype });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       log2db(
@@ -82,7 +81,7 @@ export const add_cat = async (req, res) => {
 
 export const get_ttypes = async (req, res) => {
    try {
-      const data = await searchdb.findAll({
+      const data = await Search.findAll({
          attributes: ["id", "ttype"],
          order: [["ttype", "ASC"]],
       });
@@ -104,7 +103,7 @@ export const get_ttypes = async (req, res) => {
 
 export const get_titles = async (req, res) => {
    try {
-      const data = await searchdb.findAll({
+      const data = await Search.findAll({
          attributes: ["id", "title", "date1", "code"],
          where: {
             isDeleted: 0,
@@ -119,7 +118,7 @@ export const get_titles = async (req, res) => {
 
 export const del_entry = async (req, res) => {
    try {
-      await searchdb.update(
+      await Search.update(
          { isDeleted: 1 },
          { where: { id: req.body.id } },
          { limit: 1 }
@@ -143,7 +142,7 @@ export const del_entry = async (req, res) => {
 
 export const del_cat = async (req, res) => {
    try {
-      const data = await searchdb.destroy(
+      const data = await Search.destroy(
          { where: { id: req.body.id } },
          { limit: 1 }
       );
@@ -167,7 +166,7 @@ export const del_cat = async (req, res) => {
 export const upd_entry = async (req, res) => {
    const { title, code, id } = req.body;
    try {
-      const data = await searchdb.update(
+      const data = await Search.update(
          {
             title,
             code,
