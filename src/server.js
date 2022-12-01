@@ -28,13 +28,13 @@ app.use(jsonParser);
 app.use(urlencodedParser);
 app.use(helmet());
 
-//import * as user from "./routes/UserRoutes.js";
 //import * as logs from "./routes/LogRoutes.js";
+import * as user from "./routes/UserRoutes.js";
 import * as todo from "./routes/Todo.js";
 import * as search from "./routes/SearchRoutes.js";
 
+app.post("/sv-user/login", user.login);
 //app.post("/sv-user/register", user.register);
-//app.post("/sv-user/login", user.login);
 //app.post("/sv-user/adminpanel", verifyToken, user.adminpanel);
 //app.post("/sv-user/remove_user", verifyToken, user.remove_user);
 //app.post("/sv-user/get_user", verifyToken, user.getusers);
