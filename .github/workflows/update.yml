@@ -28,6 +28,6 @@ jobs:
          - name: Build
            run: |
               echo "here"
-              cp ./* -R ../../../../../nodejs
-              cd ../../../../../nodejs
+              cp ./* -R ../../../../nodejs
+              cd ../../../../nodejs
               npm ci
