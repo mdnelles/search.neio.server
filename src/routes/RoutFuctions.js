@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { log2db } from "../components/Logger.js";
 import { fileURLToPath } from "url";
 import * as dotenv from "dotenv";
-const env = dotenv.config().parsed;
+
 const __filename = fileURLToPath(import.meta.url);
 
 const get_date = () => {
@@ -29,10 +29,11 @@ let tdate = get_date();
 let fileName = __filename.split(/[\\/]/).pop();
 
 const tokenTest = (token, res, jwt, caller, next) => {
+   const { NODE_SECRET } = dotenv.config().parsed;
    try {
-      jwt.verify(token, env.NODE_SECRET, (error) => {
+      jwt.verify(token, NODE_SECRET, (error) => {
          if (error) {
-            console.log("bad token:" + token);
+            console.log("bad token:(1)" + token);
             res.json({
                err: true,
                status: 201,
@@ -55,7 +56,7 @@ const tokenTest = (token, res, jwt, caller, next) => {
          }
       });
    } catch (error) {
-      console.log("bad token:" + token);
+      console.log("bad token(2):" + token);
       res.json({
          err: true,
          status: 201,
