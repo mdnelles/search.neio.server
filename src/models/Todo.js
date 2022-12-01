@@ -18,7 +18,7 @@ export const Todo = db.sequelize.define(
       due: {
          type: STRING,
       },
-      createAt: {
+      createdAt: {
          type: DATE,
       },
       updatedAt: {
