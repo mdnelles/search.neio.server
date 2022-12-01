@@ -1,69 +1,24 @@
 import jwt from "jsonwebtoken";
-import { log2db } from "../components/Logger.js";
-import { fileURLToPath } from "url";
 import * as dotenv from "dotenv";
-
-const __filename = fileURLToPath(import.meta.url);
-
-const get_date = () => {
-   let d = new Date();
-   let month = parseInt(d.getMonth());
-   month += 1;
-   let tdate =
-      d.getDate() +
-      "-" +
-      month +
-      "-" +
-      d.getFullYear() +
-      " - " +
-      d.getHours() +
-      ":" +
-      d.getMinutes() +
-      " " +
-      d.getSeconds();
-   return tdate;
-};
-
-let ip = "0.0.0.0";
-let tdate = get_date();
-let fileName = __filename.split(/[\\/]/).pop();
 
 const tokenTest = (token, res, jwt, caller, next) => {
    const { NODE_SECRET } = dotenv.config().parsed;
-   try {
-      jwt.verify(token, NODE_SECRET, (error) => {
-         if (error) {
-            console.log("bad token:(1)" + token);
-            res.json({
-               err: true,
-               status: 201,
-               msg: "login again to obtain new token",
-               error,
-            });
-         } else {
-            log2db(
-               200,
-               fileName,
-               "Token Test",
-               "Token accepted",
-               "",
-               ip,
-               caller,
-               tdate
-            );
-            console.log("token ok caller -> " + caller);
-            next(); // Next middleware
-         }
-      });
-   } catch (error) {
-      console.log("bad token(2):" + token);
-      res.json({
-         err: true,
-         status: 201,
-         msg: "login again to obtain new token",
-         error,
-      });
-   }
+
+   jwt.verify(token, NODE_SECRET, (error) => {
+      if (error) {
+         console.log("bad token(2):\n\t" + NODE_SECRET + "\n\t" + token);
+         console.log(error);
+         res.json({
+            err: true,
+            status: 201,
+            msg: "login again to obtain new token",
+            error,
+         });
+      } else {
+         console.log("token ok caller -> " + caller);
+         next(); // Next middleware
+      }
+   });
 };
 
 export function verifyToken(req, res, next) {
