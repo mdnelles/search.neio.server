@@ -1,14 +1,14 @@
 import { Router } from "express";
-import Search from "../models/Search";
-import { create, findAll, destroy } from "../models/SearchTypes";
+import * as searchdb from "../models/Search.js";
+import { fileURLToPath } from "url";
 import { QueryTypes } from "sequelize";
-import { sequelize } from "../database/db";
 import fileUpload from "express-fileupload";
 import { remove } from "fs-extra";
-import { get_date, log2db } from "../components/Logger";
-import { verifyToken } from "./RoutFuctions";
-import { fileURLToPath } from "url";
 import path from "path";
+
+//import * as searchdb from "../models/SearchTypes.js";
+import db from "../database/db.js";
+import { get_date, log2db } from "../components/Logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,7 +18,7 @@ search.use(fileUpload({ safeFileNames: true, preserveExtension: true }));
 
 const tdate = get_date();
 
-search.post("/add_entry", verifyToken, async (req, res) => {
+export const add_entry = async (req, res) => {
    const { referer } = req.headers || "no refer";
    try {
       //const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
@@ -41,7 +41,7 @@ search.post("/add_entry", verifyToken, async (req, res) => {
          image,
       };
 
-      const data = await Search.create(codeData);
+      const data = await searchdb.create(codeData);
 
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
@@ -57,12 +57,12 @@ search.post("/add_entry", verifyToken, async (req, res) => {
       );
       res.json({ status: 201, err: true, msg: "", error });
    }
-});
+};
 
-search.post("/add_cat", verifyToken, async (req, res) => {
+export const add_cat = async (req, res) => {
    const ttype = req.body.category || "";
    try {
-      const data = await create({ ttype });
+      const data = await searchdb.create({ ttype });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       log2db(
@@ -78,11 +78,11 @@ search.post("/add_cat", verifyToken, async (req, res) => {
       res.json({ status: 200, err: false, msg: "ok" });
       console.log("Err Searchroutes.add_cat: " + error);
    }
-});
+};
 
-search.post("/get_ttypes", verifyToken, async (req, res) => {
+export const get_ttypes = async (req, res) => {
    try {
-      const data = await findAll({
+      const data = await searchdb.findAll({
          attributes: ["id", "ttype"],
          order: [["ttype", "ASC"]],
       });
@@ -100,11 +100,11 @@ search.post("/get_ttypes", verifyToken, async (req, res) => {
       );
       res.json({ status: 200, err: true, msg: "", error });
    }
-});
+};
 
-search.post("/get_titles", verifyToken, async (req, res) => {
+export const get_titles = async (req, res) => {
    try {
-      const data = await Search.findAll({
+      const data = await searchdb.findAll({
          attributes: ["id", "title", "date1", "code"],
          where: {
             isDeleted: 0,
@@ -125,11 +125,11 @@ search.post("/get_titles", verifyToken, async (req, res) => {
       );
       res.json({ err: true, msg: "error", error, status: 201 });
    }
-});
+};
 
-search.post("/del_entry", verifyToken, async (req, res) => {
+export const del_entry = async (req, res) => {
    try {
-      await Search.update(
+      await searchdb.update(
          { isDeleted: 1 },
          { where: { id: req.body.id } },
          { limit: 1 }
@@ -149,11 +149,14 @@ search.post("/del_entry", verifyToken, async (req, res) => {
       console.log(error);
       res.json({ err: true, msg: "error", error, status: 201 });
    }
-});
+};
 
-search.post("/del_cat", verifyToken, async (req, res) => {
+export const del_cat = async (req, res) => {
    try {
-      const data = await destroy({ where: { id: req.body.id } }, { limit: 1 });
+      const data = await searchdb.destroy(
+         { where: { id: req.body.id } },
+         { limit: 1 }
+      );
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       log2db(
@@ -169,12 +172,12 @@ search.post("/del_cat", verifyToken, async (req, res) => {
       console.log(error);
       res.json({ err: true, msg: "error", error, status: 201 });
    }
-});
+};
 
-search.post("/upd_entry", verifyToken, async (req, res) => {
+export const upd_entry = async (req, res) => {
    const { title, code, id } = req.body;
    try {
-      const data = await Search.update(
+      const data = await searchdb.update(
          {
             title,
             code,
@@ -197,13 +200,13 @@ search.post("/upd_entry", verifyToken, async (req, res) => {
       console.log(error);
       res.json({ err: true, msg: "error", error, status: 201 });
    }
-});
+};
 
-search.post("/do_query", verifyToken, async (req, res) => {
+export const do_query = async (req, res) => {
    try {
       let query = decodeURI(req.body.query).toString(),
          data = "no data";
-      const data1 = await sequelize.query(
+      const data1 = await db.query(
          "SELECT * FROM searches WHERE ( title LIKE :query AND isDeleted = 0 )",
          {
             replacements: {
@@ -213,7 +216,7 @@ search.post("/do_query", verifyToken, async (req, res) => {
          }
       );
 
-      const data2 = await sequelize.query(
+      const data2 = await db.query(
          "SELECT * FROM searches WHERE code LIKE :query AND isDeleted = 0 AND !(title LIKE :query) ",
          {
             replacements: {
@@ -245,9 +248,9 @@ search.post("/do_query", verifyToken, async (req, res) => {
       console.log("err:" + error);
       res.json({ status: 200, err: true, msg: "", error });
    }
-});
+};
 
-search.post("/removeFile", verifyToken, (req, res) => {
+export const removeFile = (req, res) => {
    console.log("in removeFile");
    const path = "../client/public/upload/";
    const __filename = req.body.__filename;
@@ -275,9 +278,9 @@ search.post("/removeFile", verifyToken, (req, res) => {
          );
          res.send("failed to delete file").end();
       });
-});
+};
 
-search.post("/uploadfile", verifyToken, function (req, res) {
+export const uploadfile = function (req, res) {
    var mime = req.files.files.mimetype.toString();
    let pathToUpload = __dirname
       .toString()
@@ -324,6 +327,4 @@ search.post("/uploadfile", verifyToken, function (req, res) {
       console.log("Illegal file type");
       res.send("Illegal file type").end();
    }
-});
-
-export default search;
+};

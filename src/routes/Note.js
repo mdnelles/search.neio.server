@@ -1,19 +1,16 @@
-import { Router } from "express";
-import Note from "../models/Note";
-import { sequelize } from "../database/db";
-import { get_date, log2db } from "../components/Logger";
-import { verifyToken } from "./RoutFuctions";
+import Note from "../models/Note.js";
+import db from "../database/db.js";
+import { get_date, log2db } from "../components/Logger.js";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
-const note = Router();
 let tdate = get_date();
 let fileName = __filename.split(/[\\/]/).pop();
 
-note.post("/upd_entry", verifyToken, async (req, res) => {
+export const upd_entry = async (req, res) => {
    try {
-      let data = await Note.sequelize.truncate({ cascade: true });
-      data = await Note.create({ note });
+      let data = await Note.db.truncate({ cascade: true });
+      data = await Note.create({ data });
 
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
@@ -30,11 +27,11 @@ note.post("/upd_entry", verifyToken, async (req, res) => {
       console.log("err:" + error);
       res.json({ status: 201, err: true, msg: "", error });
    }
-});
+};
 
-note.post("/fetch", verifyToken, async (req, res) => {
+export const fetch = async (req, res) => {
    try {
-      const data = await sequelize.query("SELECT * FROM notes");
+      const data = await db.query("SELECT * FROM notes");
       res.json({ status: 200, err: false, msg: "ok", data: data[0] });
    } catch (error) {
       log2db(
@@ -50,6 +47,4 @@ note.post("/fetch", verifyToken, async (req, res) => {
       console.log(error);
       res.json({ status: 200, err: true, msg: "", error });
    }
-});
-
-export default note;
+};

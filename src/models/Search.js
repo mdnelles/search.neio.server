@@ -1,7 +1,7 @@
 import { INTEGER, STRING } from "sequelize";
-import { sequelize } from "../database/db.js";
+import db from "../database/db.js";
 
-export default sequelize.define(
+export default db.sequelize.define(
    "search",
    {
       id: {

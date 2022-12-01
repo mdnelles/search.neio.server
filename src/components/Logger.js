@@ -1,4 +1,4 @@
-import { create } from "../models/Logs";
+import * as log from "../models/Logs.js";
 
 export const log2db = (
    code,
@@ -30,7 +30,7 @@ export const log2db = (
       refer,
       tdate,
    };
-   create(logData);
+   log.create(logData);
 };
 
 export function get_date() {

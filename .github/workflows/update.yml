@@ -1,3 +1,4 @@
+# you must merge branch if edits are done there (to trigger update)
 name: NodeJS CI push to server
 
 on:
@@ -27,6 +28,6 @@ jobs:
          - name: Build
            run: |
               echo "here"
-              cp ./* -R ../../../../nodejs
-              cd ../../../../nodejs
+              cp ./* -R ../../../../../nodejs
+              cd ../../../../../nodejs
               npm ci
