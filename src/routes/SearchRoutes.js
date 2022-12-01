@@ -84,6 +84,7 @@ export const get_ttypes = async (req, res) => {
       const data = await Search.findAll({
          attributes: ["id", "ttype"],
          order: [["ttype", "ASC"]],
+         group: ["ttype"],
       });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
