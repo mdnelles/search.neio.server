@@ -96,7 +96,6 @@ export const get_ttypes = async (req, res) => {
          attributes: ["ttype"],
          order: [["ttype", "ASC"]],
       });
-      console.log(data);
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       console.log("------error getting ttypes----");
