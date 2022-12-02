@@ -56,7 +56,7 @@ export const get_todo = async (req, res) => {
    try {
       //const data = await db.query("SELECT * FROM todos ");
       const data = await Todo.findAll();
-      res.json({ status: 200, err: false, msg: "ok", data: data[0] });
+      res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       console.log("----error fetching todos ------");
       console.log(error);
