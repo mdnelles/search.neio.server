@@ -7,7 +7,7 @@ import { remove } from "fs-extra";
 import path from "path";
 
 import { db } from "../database/db.js";
-import { get_date, log2db } from "../components/Logger.js";
+import { get_date, log2db } from "../utils/Logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -176,6 +176,8 @@ export const del_cat = async (req, res) => {
 
 export const upd_entry = async (req, res) => {
    const { title, code, id } = req.body;
+   console.log("req.body");
+   console.log(req.body);
    try {
       const data = await Search.update(
          {

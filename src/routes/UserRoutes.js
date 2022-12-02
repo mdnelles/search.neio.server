@@ -3,7 +3,7 @@ import { hash as _hash } from "bcrypt";
 import { fileURLToPath } from "url";
 import * as dotenv from "dotenv";
 import { User } from "../models/User.js";
-import { get_date, log2db } from "../components/Logger.js";
+import { get_date, log2db } from "../utils/Logger.js";
 const { NODE_ADMIN_EMAIL, NODE_ADMIN_PASSWORD, NODE_SECRET } =
    dotenv.config().parsed;
 

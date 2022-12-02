@@ -1,6 +1,6 @@
 import { Todo } from "../models/Todo.js";
 //import { db } from "../database/db.js";
-import { get_date, log2db } from "../components/Logger.js";
+import { get_date, log2db } from "../utils/Logger.js";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,18 +14,9 @@ export const add_entry = async (req, res) => {
 
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "add_entry.2",
-         "todoroutes.add_entry",
-         error,
-         req,
-         referer,
-         tdate
-      );
-      res.json({ status: 201, err: true, msg: "" });
-      console.log("Err todoroutes.add_entry: " + error);
+      console.log("----error adding todos ------");
+      console.log(error);
+      res.json({ status: 201, err: true, msg: "", error });
    }
 };
 
@@ -34,17 +25,9 @@ export const del_entry = async (req, res) => {
       await Todo.destroy({ where: { id: req.body.id } }, { limit: 1 });
       res.json({ status: 200, err: false, msg: "ok" });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "del_entry",
-         "no data to send",
-         error,
-         req,
-         req.headers.referer,
-         tdate
-      );
-      res.json({ status: 200, err: true, msg: "", error });
+      console.log("----error deleting todos ------");
+      console.log(error);
+      json({ status: 200, err: true, msg: "error deleting todo", error });
    }
 };
 
@@ -63,17 +46,8 @@ export const upd_entry = async (req, res) => {
 
       res.json({ status: 200, err: false, msg: "ok" });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "upd_entry",
-         "catch",
-         error,
-         req,
-         req.headers.referer,
-         tdate
-      );
-      console.log("err:" + error);
+      console.log("----error updating todos ------");
+      console.log(error);
       res.json({ status: 201, err: true, msg: "", error });
    }
 };
@@ -84,17 +58,8 @@ export const get_todo = async (req, res) => {
       const data = await Todo.findAll();
       res.json({ status: 200, err: false, msg: "ok", data: data[0] });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "do_query",
-         "catch.2",
-         error,
-         req,
-         req.headers.referer,
-         tdate
-      );
-      console.log("err:" + error);
-      res.json({ status: 200, err: true, msg: "", error });
+      console.log("----error fetching todos ------");
+      console.log(error);
+      res.json({ status: 200, err: true, msg: "error fetching todos", error });
    }
 };
