@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { Search } from "../models/Search.js";
+import { SearchTypes } from "../models/SearchTypes.js";
 import { fileURLToPath } from "url";
 import { QueryTypes } from "sequelize";
 import fileUpload from "express-fileupload";
@@ -91,23 +92,15 @@ export const add_cat = async (req, res) => {
 
 export const get_ttypes = async (req, res) => {
    try {
-      const data = await Search.findAll({
+      const data = await SearchTypes.findAll({
          attributes: ["ttype"],
          order: [["ttype", "ASC"]],
-         group: ["ttype"],
       });
+      console.log(data);
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "get_types",
-         "catch err",
-         error,
-         req,
-         req.headers.referer,
-         tdate
-      );
+      console.log("------error getting ttypes----");
+      console.log(error);
       res.json({ status: 200, err: true, msg: "", error });
    }
 };
@@ -189,16 +182,7 @@ export const upd_entry = async (req, res) => {
       );
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "upd_entry",
-         "catch",
-         error,
-         req,
-         req.headers.referer,
-         tdate
-      );
+      console.log("----error updating serarchs ------");
       console.log(error);
       res.json({ err: true, msg: "error", error, status: 201 });
    }
@@ -237,17 +221,8 @@ export const do_query = async (req, res) => {
       }
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "do_query",
-         "catch.2",
-         error,
-         req,
-         req.headers.referer,
-         tdate
-      );
-      console.log("err:" + error);
+      console.log("----error do_query serarchs ------");
+      console.log(error);
       res.json({ status: 200, err: true, msg: "", error });
    }
 };
@@ -298,17 +273,8 @@ export const uploadfile = function (req, res) {
    ) {
       req.files.files.mv(pathToUpload + req.files.files.name, function (err) {
          if (err) {
-            log2db(
-               500,
-               __filename,
-               "uploadfile",
-               "fail during upload",
-               err,
-               req,
-               req.headers.referer,
-               tdate
-            );
-            console.log("Error: " + err);
+            console.log("----error uploading file ------");
+            console.log(err);
             res.send("SearchRoutes.uploadfileUpload failed" + err).end();
          } else {
             console.log("Uploaded ok");
@@ -316,16 +282,6 @@ export const uploadfile = function (req, res) {
          }
       });
    } else {
-      log2db(
-         500,
-         __filename,
-         "uploadfile",
-         "Illegal file type",
-         "",
-         req,
-         req.headers.referer,
-         tdate
-      );
       console.log("Illegal file type");
       res.send("Illegal file type").end();
    }

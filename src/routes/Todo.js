@@ -1,10 +1,16 @@
 import { Todo } from "../models/Todo.js";
-//import { db } from "../database/db.js";
-import { get_date, log2db } from "../utils/Logger.js";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-let tdate = get_date();
+export const get_todo = async (req, res) => {
+   try {
+      //const data = await db.query("SELECT * FROM todos ");
+      const data = await Todo.findAll();
+      res.json({ status: 200, err: false, msg: "ok", data });
+   } catch (error) {
+      console.log("----error fetching todos ------");
+      console.log(error);
+      res.json({ status: 200, err: true, msg: "error fetching todos", error });
+   }
+};
 
 export const add_entry = async (req, res) => {
    const { title, details, due } = req.body;
@@ -49,17 +55,5 @@ export const upd_entry = async (req, res) => {
       console.log("----error updating todos ------");
       console.log(error);
       res.json({ status: 201, err: true, msg: "", error });
-   }
-};
-
-export const get_todo = async (req, res) => {
-   try {
-      //const data = await db.query("SELECT * FROM todos ");
-      const data = await Todo.findAll();
-      res.json({ status: 200, err: false, msg: "ok", data });
-   } catch (error) {
-      console.log("----error fetching todos ------");
-      console.log(error);
-      res.json({ status: 200, err: true, msg: "error fetching todos", error });
    }
 };
