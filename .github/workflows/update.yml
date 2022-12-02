@@ -1,10 +1,11 @@
 # you must merge branch if edits are done there (to trigger update)
 name: NodeJS CI push to server
 
-on:
-   pull_request:
-      paths-ignore:
-         - "**.md"
+on: [push, workflow_dispatch]
+#on:
+#   pull_request:
+#      paths-ignore:
+#         - "**.md"
    push:
       branches:
          - main
