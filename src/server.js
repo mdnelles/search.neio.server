@@ -30,8 +30,9 @@ app.use(helmet());
 
 //import * as logs from "./routes/LogRoutes.js";
 import * as user from "./routes/UserRoutes.js";
-import * as todo from "./routes/Todo.js";
+import * as todo from "./routes/TodoRoutes.js";
 import * as search from "./routes/SearchRoutes.js";
+import * as note from "./routes/NoteRoutes.js";
 
 app.post("/sv-user/login", user.login);
 //app.post("/sv-user/register", user.register);
@@ -43,8 +44,8 @@ app.post("/sv-user/login", user.login);
 //app.post("/sv-logs/get_logs", verifyToken, logs.get_logs);
 //app.post("/sv-logs/get_logcount", verifyToken, logs.get_logcount);
 
-//app.post("/sv-note/upd_entry", verifyToken, note.upd_entry);
-//app.post("/sv-note/fetch", verifyToken, note.fetch);
+app.post("/sv-note/upd_entry", verifyToken, note.upd_entry);
+app.post("/sv-note/fetch", verifyToken, note.fetch);
 
 app.post("/sv-search/add_entry", verifyToken, search.add_entry);
 app.post("/sv-search/add_cat", verifyToken, search.add_cat);
