@@ -6,7 +6,10 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import path, { resolve } from "path";
 import { fileURLToPath } from "url";
-import { verifyToken } from "./routes/RoutFuctions.js";
+import { verifyToken } from "./middleware/verifyToken.js";
+import fetch from "node-fetch";
+
+global.fetch = fetch;
 
 const env = dotenv.config().parsed;
 const __filename = fileURLToPath(import.meta.url);
@@ -33,17 +36,9 @@ import * as user from "./routes/UserRoutes.js";
 import * as todo from "./routes/TodoRoutes.js";
 import * as search from "./routes/SearchRoutes.js";
 import * as note from "./routes/NoteRoutes.js";
+import * as chat from "./routes/ChatRoutes.js";
 
 app.post("/sv-user/login", user.login);
-//app.post("/sv-user/register", user.register);
-//app.post("/sv-user/adminpanel", verifyToken, user.adminpanel);
-//app.post("/sv-user/remove_user", verifyToken, user.remove_user);
-//app.post("/sv-user/get_user", verifyToken, user.getusers);
-//app.post("/sv-user/islogged", user.islogged);
-
-//app.post("/sv-logs/get_logs", verifyToken, logs.get_logs);
-//app.post("/sv-logs/get_logcount", verifyToken, logs.get_logcount);
-
 app.post("/sv-note/upd_entry", verifyToken, note.upd_entry);
 app.post("/sv-note/fetch", verifyToken, note.fetch);
 
@@ -62,6 +57,8 @@ app.post("/sv-todo/add_entry", verifyToken, todo.add_entry);
 app.post("/sv-todo/del_entry", verifyToken, todo.del_entry);
 app.post("/sv-todo/upd_entry", verifyToken, todo.upd_entry);
 app.post("/sv-todo/get_todo", verifyToken, todo.get_todo);
+
+app.get("/chat/wait", chat.chatWait);
 
 // serve static assets if in production
 if (env.NODE_ENV === "production") {
