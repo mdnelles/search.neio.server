@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import path, { resolve } from "path";
 import { fileURLToPath } from "url";
 import { verifyToken } from "./middleware/verifyToken.js";
+import { validateReferrerOrIP } from "./middleware/validateSender.js";
 import fetch from "node-fetch";
 
 global.fetch = fetch;
@@ -58,7 +59,7 @@ app.post("/sv-todo/del_entry", verifyToken, todo.del_entry);
 app.post("/sv-todo/upd_entry", verifyToken, todo.upd_entry);
 app.post("/sv-todo/get_todo", verifyToken, todo.get_todo);
 
-app.get("/chat/wait", chat.chatWait);
+app.all("/chat/wait", chat.chatWait);
 
 // serve static assets if in production
 if (env.NODE_ENV === "production") {
