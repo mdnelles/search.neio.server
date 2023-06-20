@@ -1,14 +1,20 @@
-const express = require("express");
+import express from "express";
 const app = express();
-const env = dotenv.config().parsed;
+import { config as dotenvConfig } from "dotenv";
+
+const env = dotenvConfig().parsed;
 
 // Middleware function to check the referring URL or user's IP
 export const validateReferrerOrIP = (req, res, next) => {
    const referrer = req.get("Referrer");
    const userIP = req.ip;
    const adminIP = env.ADMINIP;
+   const headers = req.headers;
+   console.log(req.headers["referer"]);
 
-   if (referrer && referrer.includes(env.ALLOOWED_DOMANI)) {
+   console.log(headers);
+   console.log(referrer);
+   if (referrer && referrer.includes(env.ALLOWED_DOMAIN)) {
       // Referring URL is nnn.io, allow access
       next();
    } else if (userIP === adminIP) {
