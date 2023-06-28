@@ -1,9 +1,11 @@
-import { Todo } from "../models/Todo.js";
+import { dbmongo } from "../database/mongodb.js";
+// import { Todo } from "../models/Todo.js";
 
 export const get_todo = async (req, res) => {
    try {
-      //const data = await db.query("SELECT * FROM todos ");
-      const data = await Todo.findAll();
+      //const data = await Todo.findAll();
+      const data = await dbmongo.collection("todos").find({}).toArray();
+
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       console.log("----error fetching todos ------");
@@ -14,9 +16,11 @@ export const get_todo = async (req, res) => {
 
 export const add_entry = async (req, res) => {
    const { title, details, due } = req.body;
-   const { referer } = req.headers;
    try {
-      let data = await Todo.create({ title, details, due });
+      //let data = await Todo.create({ title, details, due });
+      const data = await dbmongo
+         .collection("todos")
+         .insertOne({ title, details, due });
 
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
@@ -28,7 +32,8 @@ export const add_entry = async (req, res) => {
 
 export const del_entry = async (req, res) => {
    try {
-      await Todo.destroy({ where: { id: req.body.id } }, { limit: 1 });
+      //await Todo.destroy({ where: { id: req.body.id } }, { limit: 1 });
+      await dbmongo.collection("todos").deleteOne({ _id: req.body.id });
       res.json({ status: 200, err: false, msg: "ok" });
    } catch (error) {
       console.log("----error deleting todos ------");
@@ -40,15 +45,9 @@ export const del_entry = async (req, res) => {
 export const upd_entry = async (req, res) => {
    try {
       const { title = "", details = "", due = "", id = 0 } = req.body;
-      await Todo.update(
-         {
-            title,
-            details,
-            due,
-         },
-         { where: { id } },
-         { limit: 1 }
-      );
+      await dbmongo
+         .collection("todos")
+         .updateOne({ _id: id }, { $set: { title, details, due } });
 
       res.json({ status: 200, err: false, msg: "ok" });
    } catch (error) {

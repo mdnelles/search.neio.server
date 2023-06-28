@@ -38,6 +38,7 @@ import * as todo from "./routes/TodoRoutes.js";
 import * as search from "./routes/SearchRoutes.js";
 import * as note from "./routes/NoteRoutes.js";
 import * as chat from "./routes/ChatRoutes.js";
+import * as sm from "./routes/SqlToMongo.js";
 
 app.post("/sv-user/login", user.login);
 app.post("/sv-note/upd_entry", verifyToken, note.upd_entry);
@@ -61,7 +62,7 @@ app.post("/sv-todo/get_todo", verifyToken, todo.get_todo);
 
 app.all("/chat/wait", chat.chatWait);
 
-app.all("/s2m/convert", search.convertSQLToMongo);
+//app.all("/sm/convert", sm.convertSQLToMongo);
 
 // serve static assets if in production
 if (env.NODE_ENV === "production") {

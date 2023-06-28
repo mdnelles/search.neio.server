@@ -8,6 +8,7 @@ import { remove } from "fs-extra";
 import path from "path";
 
 import { db } from "../database/db.js";
+import { dbmongo } from "../database/mongodb.js";
 import { get_date, log2db } from "../utils/Logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,26 +22,15 @@ const tdate = get_date();
 export const add_entry = async (req, res) => {
    const { referer } = req.headers || "no refer";
    try {
-      //const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
       const { title, keywords, intro, code, __filename } = req.body;
 
-      let tmp = await Search.findOne({
-         attributes: ["id"],
-         order: [["id", "DESC"]],
-      });
-
-      const id = parseInt(tmp.id) + 1;
-
-      var image = __filename;
+      const image = __filename;
 
       var date1 = get_date();
       var date2 = Math.round(new Date().getTime() / 1000);
       var ttype = req.body.ttype;
 
-      var image = __filename;
-
       let codeData = {
-         id,
          ttype,
          title,
          keywords,
@@ -51,20 +41,12 @@ export const add_entry = async (req, res) => {
          image,
       };
 
-      const data = await Search.create(codeData);
+      //const data = await Search.create(codeData);  // SQL
+      const data = await dbmongo.collection("searches").insertOne(codeData);
 
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "add_entry.2",
-         "Searchroutes.add_entry",
-         error,
-         req,
-         referer,
-         tdate
-      );
+      console.log(error);
       res.json({ status: 201, err: true, msg: "", error });
    }
 };
@@ -72,19 +54,11 @@ export const add_entry = async (req, res) => {
 export const add_cat = async (req, res) => {
    const ttype = req.body.category || "";
    try {
-      const data = await Search.create({ ttype });
+      //const data = await Search.create({ ttype });
+      const data = dbmongo.collection("ttype").insertOne({ ttype });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "add_cat",
-         error,
-         "",
-         req,
-         req.headers.referer,
-         tdate
-      );
+      console.log(error);
       res.json({ status: 200, err: false, msg: "ok" });
       console.log("Err Searchroutes.add_cat: " + error);
    }
@@ -92,13 +66,11 @@ export const add_cat = async (req, res) => {
 
 export const get_ttypes = async (req, res) => {
    try {
-      const data = await SearchTypes.findAll({
-         attributes: ["ttype"],
-         order: [["ttype", "ASC"]],
-      });
+      // const data = await SearchTypes.findAll({ attributes: ["ttype"],order: [["ttype", "ASC"]]});
+      const data = await dbmongo.collection("search_types").find({}).toArray();
+
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      console.log("------error getting ttypes----");
       console.log(error);
       res.json({ status: 200, err: true, msg: "", error });
    }
@@ -106,13 +78,12 @@ export const get_ttypes = async (req, res) => {
 
 export const get_titles = async (req, res) => {
    try {
-      const data = await Search.findAll({
-         attributes: ["id", "title", "date1", "code"],
-         where: {
-            isDeleted: 0,
-         },
-         order: [["date2", "DESC"]],
-      });
+      // const data = await Search.findAll({attributes: ["id", "title", "date1", "code"],where: isDeleted: 0, }, order: [["date2", "DESC"]],});
+
+      const data = await dbmongo
+         .collection("searches")
+         .find({ isDeleted: { $ne: true } })
+         .toArray();
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       res.json({ err: true, msg: "error", error, status: 201 });
@@ -121,23 +92,16 @@ export const get_titles = async (req, res) => {
 
 export const del_entry = async (req, res) => {
    try {
-      await Search.update(
-         { isDeleted: 1 },
-         { where: { id: req.body.id } },
-         { limit: 1 }
-      );
-      res.json({ status: 200, err: false, msg: "ok" });
+      // await Search.update( { isDeleted: 1 },{ where: { id: req.body.id } },{ limit: 1 });
+      const data = await dbmongo
+         .collection("searches")
+         .updateOne(
+            { isDeleted: 1, _id: req.body._id },
+            { $set: { isDeleted: true } },
+            { limit: 1 }
+         );
+      res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "del_entry",
-         "no data to send",
-         error,
-         req,
-         req.headers.referer,
-         tdate
-      );
       console.log(error);
       res.json({ err: true, msg: "error", error, status: 201 });
    }
@@ -145,22 +109,12 @@ export const del_entry = async (req, res) => {
 
 export const del_cat = async (req, res) => {
    try {
-      const data = await Search.destroy(
-         { where: { id: req.body.id } },
-         { limit: 1 }
-      );
+      // const data = await Search.destroy({ where: { id: req.body.id } },{ limit: 1 });
+      const data = await dbmongo
+         .collection("search_types")
+         .deleteOne({ _id: req.body.id });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      log2db(
-         500,
-         __filename,
-         "del_cat",
-         "catch",
-         error,
-         req,
-         req.headers.referer,
-         tdate
-      );
       console.log(error);
       res.json({ err: true, msg: "error", error, status: 201 });
    }
@@ -168,17 +122,11 @@ export const del_cat = async (req, res) => {
 
 export const upd_entry = async (req, res) => {
    const { title, code, id } = req.body;
-   console.log("req.body");
-   console.log(req.body);
    try {
-      const data = await Search.update(
-         {
-            title,
-            code,
-         },
-         { where: { id } },
-         { limit: 1 }
-      );
+      //const data = await Search.update({title,code, },{ where: { id } },{ limit: 1 });
+      const data = await dbmongo
+         .collection("searches")
+         .updateOne({ _id: id }, { $set: { title, code } }, { limit: 1 });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       console.log("----error updating serarchs ------");
@@ -189,35 +137,16 @@ export const upd_entry = async (req, res) => {
 
 export const do_query = async (req, res) => {
    try {
-      let query = decodeURI(req.body.query).toString(),
-         data = "no data";
-      const data1 = await db.query(
-         "SELECT * FROM searches WHERE ( title LIKE :query AND isDeleted = 0 )",
-         {
-            replacements: {
-               query: `%${query}%`,
+      const query = await decodeURI(req.body.query).toString();
+      const regexQuery = new RegExp(query, "i");
+      const data = await Search.find({
+         $and: [
+            {
+               $or: [{ title: regexQuery }, { code: regexQuery }],
             },
-            type: QueryTypes.SELECT,
-         }
-      );
-
-      const data2 = await db.query(
-         "SELECT * FROM searches WHERE code LIKE :query AND isDeleted = 0 AND !(title LIKE :query) ",
-         {
-            replacements: {
-               query: `%${query}%`,
-            },
-            type: QueryTypes.SELECT,
-         }
-      );
-
-      if (data1 && data2) {
-         data = data1.concat(data2);
-      } else if (data1) {
-         data = data1;
-      } else if (data2) {
-         data = data2;
-      }
+            { isDeleted: false },
+         ],
+      });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       console.log("----error do_query serarchs ------");

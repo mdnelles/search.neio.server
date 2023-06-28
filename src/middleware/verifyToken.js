@@ -15,7 +15,7 @@ const tokenTest = (token, res, jwt, caller, next) => {
             error,
          });
       } else {
-         console.log("token ok caller -> " + caller);
+         //console.log("token ok caller -> " + caller);
          next(); // Next middleware
       }
    });

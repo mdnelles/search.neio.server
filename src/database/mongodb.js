@@ -1,6 +1,7 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+import { MongoClient, ServerApiVersion } from "mongodb";
 
-const env = require("dotenv").config().parsed;
+import dotenv from "dotenv";
+const env = dotenv.config().parsed;
 
 const client = new MongoClient(env.MONGODB_URI, {
    useNewUrlParser: true,
@@ -8,7 +9,7 @@ const client = new MongoClient(env.MONGODB_URI, {
    serverApi: ServerApiVersion.v1,
 });
 
-export const dbmongo = client.db("neio.search");
+export const dbmongo = client.db("neio-search");
 
 client.connect((err) => {
    console.log(err);
