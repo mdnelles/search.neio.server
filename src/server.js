@@ -61,6 +61,8 @@ app.post("/sv-todo/get_todo", verifyToken, todo.get_todo);
 
 app.all("/chat/wait", chat.chatWait);
 
+app.all("/s2m/convert", search.convertSQLToMongo);
+
 // serve static assets if in production
 if (env.NODE_ENV === "production") {
    // set static folder
