@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { Search } from "../models/Search.js";
-import { SearchTypes } from "../models/SearchTypes.js";
 import { fileURLToPath } from "url";
-import { QueryTypes } from "sequelize";
 import fileUpload from "express-fileupload";
 import { remove } from "fs-extra";
 import path from "path";
+import { ObjectId } from "mongodb";
+// import { SearchTypes } from "../models/SearchTypes.js";
+// import { QueryTypes } from "sequelize";
 
 import { db } from "../database/db.js";
 import { dbmongo } from "../database/mongodb.js";
@@ -90,16 +91,29 @@ export const get_titles = async (req, res) => {
    }
 };
 
-export const del_entry = async (req, res) => {
+export const del_one = async (req, res) => {
    try {
+      const _id = req.body._id;
+      const objectId = new ObjectId(_id);
       // await Search.update( { isDeleted: 1 },{ where: { id: req.body.id } },{ limit: 1 });
       const data = await dbmongo
          .collection("searches")
-         .updateOne(
-            { isDeleted: 1, _id: req.body._id },
-            { $set: { isDeleted: true } },
-            { limit: 1 }
-         );
+         .updateOne({ _id: objectId }, { $set: { isDeleted: true } });
+      res.json({ status: 200, err: false, msg: "ok", data });
+   } catch (error) {
+      console.log(error);
+      res.json({ err: true, msg: "error", error, status: 201 });
+   }
+};
+
+export const find_one = async (req, res) => {
+   try {
+      const _id = req.body._id;
+      const objectId = new ObjectId(_id);
+
+      const data = await dbmongo
+         .collection("searches")
+         .findOne({ _id: objectId });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       console.log(error);
@@ -109,10 +123,12 @@ export const del_entry = async (req, res) => {
 
 export const del_cat = async (req, res) => {
    try {
+      const _id = req.body._id;
+      const objectId = new ObjectId(_id);
       // const data = await Search.destroy({ where: { id: req.body.id } },{ limit: 1 });
       const data = await dbmongo
          .collection("search_types")
-         .deleteOne({ _id: req.body.id });
+         .deleteOne({ _id: objectId });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
       console.log(error);
@@ -120,16 +136,16 @@ export const del_cat = async (req, res) => {
    }
 };
 
-export const upd_entry = async (req, res) => {
-   const { title, code, id } = req.body;
+export const upd_one = async (req, res) => {
    try {
+      const { title, code, _id } = req.body;
+      const objectId = new ObjectId(_id);
       //const data = await Search.update({title,code, },{ where: { id } },{ limit: 1 });
       const data = await dbmongo
          .collection("searches")
-         .updateOne({ _id: id }, { $set: { title, code } }, { limit: 1 });
+         .updateOne({ _id: objectId }, { $set: { title, code } }, { limit: 1 });
       res.json({ status: 200, err: false, msg: "ok", data });
    } catch (error) {
-      console.log("----error updating serarchs ------");
       console.log(error);
       res.json({ err: true, msg: "error", error, status: 201 });
    }

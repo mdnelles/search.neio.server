@@ -72,7 +72,7 @@ export const login = (req, res) => {
          { exp: Math.floor(Date.now() / 1000) + 60 * 60 * 10000, data: email },
          NODE_SECRET
       );
-      //console.log("token issued: " + token);
+
       res.json({ status: 200, err: false, msg: "ok", token });
    } else {
       console.log({

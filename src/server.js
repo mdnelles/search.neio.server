@@ -48,10 +48,11 @@ app.post("/sv-search/add_entry", verifyToken, search.add_entry);
 app.post("/sv-search/add_cat", verifyToken, search.add_cat);
 app.post("/sv-search/get_ttypes", verifyToken, search.get_ttypes);
 app.post("/sv-search/get_titles", verifyToken, search.get_titles);
-app.post("/sv-search/del_entry", verifyToken, search.del_entry);
+app.post("/sv-search/del_entry", verifyToken, search.del_one);
 app.post("/sv-search/del_cat", verifyToken, search.del_cat);
-app.post("/sv-search/upd_entry", verifyToken, search.upd_entry);
+app.post("/sv-search/upd_entry", verifyToken, search.upd_one);
 app.post("/sv-search/do_query", verifyToken, search.do_query);
+app.post("/sv-search/find_one", verifyToken, search.find_one);
 app.post("/sv-search/removeFile", verifyToken, search.removeFile);
 app.post("/sv-search/uploadfile", verifyToken, search.uploadfile);
 

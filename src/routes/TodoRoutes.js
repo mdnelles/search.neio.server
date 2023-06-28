@@ -1,4 +1,5 @@
 import { dbmongo } from "../database/mongodb.js";
+import { ObjectId } from "mongodb";
 // import { Todo } from "../models/Todo.js";
 
 export const get_todo = async (req, res) => {
@@ -33,7 +34,8 @@ export const add_entry = async (req, res) => {
 export const del_entry = async (req, res) => {
    try {
       //await Todo.destroy({ where: { id: req.body.id } }, { limit: 1 });
-      await dbmongo.collection("todos").deleteOne({ _id: req.body.id });
+      const objectId = new ObjectId(_id);
+      await dbmongo.collection("todos").deleteOne({ _id: objectId });
       res.json({ status: 200, err: false, msg: "ok" });
    } catch (error) {
       console.log("----error deleting todos ------");
@@ -44,10 +46,11 @@ export const del_entry = async (req, res) => {
 
 export const upd_entry = async (req, res) => {
    try {
-      const { title = "", details = "", due = "", id = 0 } = req.body;
+      const { title = "", details = "", due = "", _id = 0 } = req.body;
+      const objectId = new ObjectId(_id);
       await dbmongo
          .collection("todos")
-         .updateOne({ _id: id }, { $set: { title, details, due } });
+         .updateOne({ _id: objectId }, { $set: { title, details, due } });
 
       res.json({ status: 200, err: false, msg: "ok" });
    } catch (error) {
